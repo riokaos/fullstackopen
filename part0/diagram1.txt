@@ -1,12 +1,14 @@
+title New note diagram
+
+
+note over browser
+user types new note
+end note
 browser->server: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note
+server-->browser: HTML-code code 302
+browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/note
 server-->browser: HTML-code
 browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/main.css
 server-->browser: main.css
 browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/main.js
 server-->browser: main.js
-
-
-new note created:
-browser sends a post request to serviceWorker
-the server responds with a code and updates the site, as a regular reload
-under the process the new json is loaded via the js?
