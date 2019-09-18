@@ -1,0 +1,18 @@
+title New note diagram
+
+
+note over browser
+User types new note
+end note
+browser->server: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note
+server-->browser: Http code 302
+note over server:
+server returns a 302 created
+end note
+
+browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/note
+server-->browser: HTML-code
+browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/main.css
+server-->browser: main.css
+browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/main.js
+server-->browser: main.js
