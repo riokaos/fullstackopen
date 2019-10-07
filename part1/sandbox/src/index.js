@@ -3,6 +3,13 @@ import ReactDOM from 'react-dom';
 // import './index.css';
 // import App from './App';
 // import * as serviceWorker from './serviceWorker';
+const Display = ({ counter }) => <div>{counter}</div>
+
+const Button = ({ onClick, text }) => (
+  <button onClick={onClick}>
+    {text}
+  </button>
+)
 
 const Hello = ({ name, age }) => {
   // this gets both values from props
@@ -20,16 +27,13 @@ const Hello = ({ name, age }) => {
 const App = (props) => {
   const [ counter, setCounter ] = useState(0)
   const setToValue = (value) => setCounter(value)
-  // const {counter} = props
+
   return (
     <div>
-      <div>{counter}</div>
-        <button onClick={() => setToValue(counter + 1)}>
-          plus
-        </button>
-        <button onClick={() => setToValue(0)}>
-          zero
-        </button>
+        <Display counter={counter}/>
+        <Button onClick={() => setToValue(counter+1)} text='plus'/>
+        <Button onClick={() => setToValue(counter-1)} text='minus'/>
+        <Button onClick={() => setToValue(0)} text='zero'/>
     </div>
   )
 }
