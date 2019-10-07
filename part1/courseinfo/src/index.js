@@ -23,26 +23,12 @@ const App = () => {
     ]
   }
   const partsString ="hellos"
-  const parts = [
-    {
-      name: 'Fundamentals of React',
-      exercises: 10
-    },
-    {
-      name: 'Using props to pass data',
-      exercises: 7
-    },
-    {
-      name: 'State of a component',
-      exercises: 14
-    }
-  ]
-// console.log(part1);
 
   return (
     <div>
       <Header name={course.name}/>
       <Content parts={course.parts}/>
+      <Total parts={course.parts}/>
 
     </div>
   )
@@ -71,22 +57,13 @@ class Welcome extends React.Component {
 }
 
 const Content = (props) => {
-  // console.log(props.parts);
-  // const product = []
-  // props.parts.forEach(value => {
-  //   console.log(value)  // numbers 1, -1, 3, 5 are printed, each to own line
-  //   product.push(value)
-  // })
-  // console.log(props.parts);
-  // const partes=props.parts.map(x=>x);
-    // console.log(product);
     console.log(props);
   return(
     <div>
       <p>
-        <Part name={props.parts[0].name} excercise={props.parts[0].exercise}/>
-        <Part name={props.parts[1].name} excercise={props.parts[1].exercise}/>
-        <Part name={props.parts[2].name} excercise={props.parts[2].exercise}/>
+        <Part name={props.parts[0].name} excercise={props.parts[0].exercises}/>
+        <Part name={props.parts[1].name} excercise={props.parts[1].exercises}/>
+        <Part name={props.parts[2].name} excercise={props.parts[2].exercises}/>
       </p>
 
 
@@ -103,8 +80,11 @@ const Part = (props) => {
 }
 
 const Total = (props) => {
+  let total=props.parts[0].exercises+props.parts[1].exercises+props.parts[2].exercises
   return(
-    <p>Number of exercises {props.total}</p>
+    <div>
+      <p>Number of exercises {total}</p>
+    </div>
   )
 }
 
