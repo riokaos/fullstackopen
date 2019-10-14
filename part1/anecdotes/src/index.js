@@ -15,11 +15,19 @@ const App = (props) => {
     // setSelected(props.anecdotes[Math.floor(Math.random()*props.anecdotes.length)
     setSelected(newQuoate)
   }
+  const handleVoteClick = () => {
+    let newQuoate=Math.floor(Math.random()*props.anecdotes.length);
+    // setSelected(props.anecdotes[Math.floor(Math.random()*props.anecdotes.length)
+    setSelected(newQuoate)
+  }
 
   return (
     <div>
-      <Button onClick={handleRandomClick} text='Random quote'/>
       {props.anecdotes[selected]}
+      <p>
+        <Button onClick={handleRandomClick} text='Vote'/>
+        <Button onClick={handleVoteClick} text='Random quote'/>
+      </p>
     </div>
   )
 }
