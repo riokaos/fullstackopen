@@ -6,28 +6,40 @@ const Button = ({ onClick, text }) => (
     {text}
   </button>
 )
+// const list = new Array(6).fill(0);
 
 const App = (props) => {
   const [selected, setSelected] = useState(0)
+  const arrayOfCeros=new Array(props.anecdotes.length).fill(0)
+  const [vote, setVote] = useState(arrayOfCeros)
 
+  console.log("array vote:",vote);
+
+  // console.log("array",arrayOfCeros);
   const handleRandomClick = () => {
     let newQuoate=Math.floor(Math.random()*props.anecdotes.length);
-    // setSelected(props.anecdotes[Math.floor(Math.random()*props.anecdotes.length)
     setSelected(newQuoate)
   }
   const handleVoteClick = () => {
-    let newQuoate=Math.floor(Math.random()*props.anecdotes.length);
-    // setSelected(props.anecdotes[Math.floor(Math.random()*props.anecdotes.length)
-    setSelected(newQuoate)
+    // console.log("array vote[selected]:",vote[selected]);
+    const result = vote[selected]+1;
+    vote[selected]=vote[selected]+1
+    // console.log("result",result);
+    const copyVote = [ ...vote ]
+    setVote(copyVote)
+    // vote[selected]++
+    // list[selected]++
   }
 
   return (
     <div>
       {props.anecdotes[selected]}
+      ::{vote[selected]}
       <p>
-        <Button onClick={handleRandomClick} text='Vote'/>
-        <Button onClick={handleVoteClick} text='Random quote'/>
+        <Button onClick={handleVoteClick} text='Vote'/>
+        <Button onClick={handleRandomClick} text='Random quote'/>
       </p>
+
     </div>
   )
 }
