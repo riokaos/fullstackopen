@@ -7,7 +7,13 @@ const Button = ({ onClick, text }) => (
   </button>
 )
 // const list = new Array(6).fill(0);
-
+const Maxvoted = ({anecdotes,votes}) => {
+  let i = votes.indexOf(Math.max(...votes));
+  return (
+    <div><p>{anecdotes[i]}</p>
+      <p>Has {votes[i]} votes</p></div>
+  )
+}
 const App = (props) => {
   const [selected, setSelected] = useState(0)
   const arrayOfCeros=new Array(props.anecdotes.length).fill(0)
@@ -33,13 +39,13 @@ const App = (props) => {
 
   return (
     <div>
-      {props.anecdotes[selected]}
-      ::{vote[selected]}
+      <p>{props.anecdotes[selected]}</p>
+      <p>Has {vote[selected]} votes</p>
       <p>
         <Button onClick={handleVoteClick} text='Vote'/>
         <Button onClick={handleRandomClick} text='Random quote'/>
       </p>
-
+      <Maxvoted anecdotes={props.anecdotes} votes={vote}/>
     </div>
   )
 }
