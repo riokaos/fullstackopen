@@ -1,67 +1,75 @@
 import React, { useState } from 'react'
 import Name from './components/Name'
 
-const notes = [
-  {
-    id: 1,
-    content: 'HTML is easy',
-    date: '2019-05-30T17:30:31.098Z',
-    important: true
-  },
-  {
-    id: 2,
-    content: 'Browser can execute only Javascript',
-    date: '2019-05-30T18:39:34.091Z',
-    important: false
-  },
-  {
-    id: 3,
-    content: 'GET and POST are the most important methods of HTTP protocol',
-    date: '2019-05-30T19:20:14.298Z',
-    important: true
-  }
-]
+
 const App = () => {
   const [ persons, setPersons] = useState([
-    { id: 1,
-      name: 'Arto Hellas' }
+    { name: 'Arto Hellas', number: '040-123456' },
+    { name: 'Ada Lovelace', number: '39-44-5323523' },
+    { name: 'Dan Abramov', number: '12-43-234345' },
+    { name: 'Mary Poppendieck', number: '39-23-6423122' }
   ])
   const [ newName, setNewName ] = useState()
+  const [ newNumber, setNewNumber ] = useState()
+  const [showAll, setShowAll] = useState()
 
-  const rows = () => persons.map(person =>
+
+
+  // const personsToShow =  persons.filter(person => person.name === 'Arto Hellas')
+  var personsToShow = persons
+  const handleSearchChange = (event) =>{
+    console.log(event.target.value)
+    // var personsToShow={}
+    if (event.target.value!==""){
+      console.log("event",event.target.value);
+      // Assign original list to current
+      // personsToShow = persons.filter(element => element.name.some((obj => )));
+      personsToShow = persons.filter(person => person.name.match(event.target.value));
+      // personsToShow = persons.filter(l => {console.log( person.name.toLowerCase().match(event.target.value));
+      console.log("persons:",persons);
+      console.log("filteredPlaces:",personsToShow);
+
+    }
+    else {
+      personsToShow=persons;
+      console.log("filteredPlacesin:",personsToShow);
+    }
+    console.log("filteredPlaces2:",personsToShow);
+  }
+  const rows = () => personsToShow.map(person =>
     <Name
       key={person.id}
       person={person}
     />
   )
-  // console.log("rows:",rows());
 
-  // const rows = () => notesToShow.map(note =>
-  //        <p> key={persons.id} persons={persons}</>
-  //       )
 
   const addName = (event) => {
-
     // Find if that name already exist
-    const exists = Object.values(persons).reduce((t, {name}) =>newName==name, 0)
+    const exists = Object.values(persons).reduce((t, {name}) =>newName===name, 0)
+    console.log("object value:",Object.values(persons));
+    console.log("Newname:",newName);
     console.log("exist",exists);
     if (!exists)
     {
       event.preventDefault()
       const nameObject = {
         name: newName,
+        number: newNumber,
         date: new Date().toISOString(),
         id: persons.length + 1,
+
       }
       setPersons(persons.concat(nameObject))
       setNewName('')
+      setNewNumber('')
       console.log('button clicked',event.target);
     }
     else {
       event.preventDefault()
       const tempAnswer=newName +' is already added to the phonebook'
       alert(tempAnswer);
-      setNewName('')
+      // setNewName('')
     }
   }
 
@@ -70,16 +78,35 @@ const App = () => {
     console.log(event.target.value)
     setNewName(event.target.value)
   }
+  const handleNumberChange = (event) =>{
+    console.log(event.target.value)
+    setNewNumber(event.target.value)
+  }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <div>
+      <button onClick={() => setShowAll(!showAll)}>
+       show {showAll ? 'important' : 'all'}
+      </button>
+        filter shown with: <input
+        type="search"
+        onChange={handleSearchChange}
+        />
+      </div>
       <form onSubmit={addName}>
       <div>debug: {newName}</div>
         <div>
           name: <input
           value={newName}
           onChange={handleNameChange}
+          />
+        </div>
+        <div>
+          number: <input
+          value={newNumber}
+          onChange={handleNumberChange}
           />
         </div>
         <div>
