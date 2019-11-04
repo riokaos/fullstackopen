@@ -11,31 +11,60 @@ const App = () => {
   ])
   const [ newName, setNewName ] = useState()
   const [ newNumber, setNewNumber ] = useState()
-  const [showAll, setShowAll] = useState()
+  const [showAll, setShowAll] = useState(true)
+  const [filter, setFilter] = useState()
 
+  // console.log("eval:",(persons.filter(person => person.name === filter)));
 
+  const personsToShow = filter
+   ? persons.filter(person => person.name.indexOf(filter) >-1)
+   : persons
 
-  // const personsToShow =  persons.filter(person => person.name === 'Arto Hellas')
-  var personsToShow = persons
-  const handleSearchChange = (event) =>{
-    console.log(event.target.value)
-    // var personsToShow={}
-    if (event.target.value!==""){
-      console.log("event",event.target.value);
-      // Assign original list to current
-      // personsToShow = persons.filter(element => element.name.some((obj => )));
-      personsToShow = persons.filter(person => person.name.match(event.target.value));
-      // personsToShow = persons.filter(l => {console.log( person.name.toLowerCase().match(event.target.value));
-      console.log("persons:",persons);
-      console.log("filteredPlaces:",personsToShow);
+  // const personsToShow = () =>{
+  //   persons.filter(person => person.name === 'Arto Hellas')
+  // }
 
-    }
-    else {
-      personsToShow=persons;
-      console.log("filteredPlacesin:",personsToShow);
-    }
-    console.log("filteredPlaces2:",personsToShow);
-  }
+  // const personsToShow = persons.map((person) => {
+  //   // const popMM = (city.pop / 1000000).toFixed(2);
+  //   if(filter){
+  //     console.log("pts:",(person.name.indexOf(filter) >-1));
+  //     return (person.name.indexOf(filter) >-1);
+  //   }
+  //   else {
+  //     console.log("ptsn:",person);
+  //     return person;
+  //   }
+  // });
+  // const newFilter = () =>{
+    // const personsToShow =  persons.filter(person => person.name === 'Arto Hellas')
+  // }
+  // var personsToShow = persons
+  // const newFilter = () =>{
+  //   console.log(newFilter)
+  //   // var personsToShow={}
+  //   if (newFilter!==""){
+  //     console.log("event",newFilter);
+  //     // var personsToShow = persons.filter(person => person.name.match(newFilter));
+  //     // const rows = () => personsToShow.map(person =>
+  //     //   <Name
+  //     //     key={person.id}
+  //     //     person={person}
+  //     //   />
+  //     // )
+  //   }
+  //   else {
+  //     console.log("event",newFilter);
+  //     // personsToShow=persons;
+  //     // console.log("filteredPlacesin:",personsToShow);
+  //     // const rows = () => persons.map(person =>
+  //     //   <Name
+  //     //     key={person.id}
+  //     //     person={person}
+  //     //   />
+  //     // )
+  //   }
+  //   // console.log("filteredPlaces2:",personsToShow);
+  // }
   const rows = () => personsToShow.map(person =>
     <Name
       key={person.id}
@@ -79,20 +108,26 @@ const App = () => {
     setNewName(event.target.value)
   }
   const handleNumberChange = (event) =>{
-    console.log(event.target.value)
+    console.log("event:",event.target.value)
     setNewNumber(event.target.value)
+  }
+  const handleSetFilter = (event) =>{
+    console.log("event filter:",event.target.value)
+    setFilter(event.target.value)
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
       <div>
-      <button onClick={() => setShowAll(!showAll)}>
-       show {showAll ? 'important' : 'all'}
-      </button>
+        <button onClick={() => setShowAll(!showAll)}>
+          show {showAll ? 'important' : 'all' }
+        </button>
+      </div>
+      <div>
         filter shown with: <input
         type="search"
-        onChange={handleSearchChange}
+        onChange={handleSetFilter}
         />
       </div>
       <form onSubmit={addName}>
