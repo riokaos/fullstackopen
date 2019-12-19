@@ -21,57 +21,12 @@ const App = () => {
   }
   useEffect(hook,[]);
   console.log('render',persons.length,'persons');
-  // console.log("eval:",(persons.filter(person => person.name === filter)));
 
+// now filter on the name typed in the search
   const personsToShow = filter
    ? persons.filter(person => person.name.indexOf(filter) >-1)
    : persons
 
-  // const personsToShow = () =>{
-  //   persons.filter(person => person.name === 'Arto Hellas')
-  // }
-
-  // const personsToShow = persons.map((person) => {
-  //   // const popMM = (city.pop / 1000000).toFixed(2);
-  //   if(filter){
-  //     console.log("pts:",(person.name.indexOf(filter) >-1));
-  //     return (person.name.indexOf(filter) >-1);
-  //   }
-  //   else {
-  //     console.log("ptsn:",person);
-  //     return person;
-  //   }
-  // });
-  // const newFilter = () =>{
-    // const personsToShow =  persons.filter(person => person.name === 'Arto Hellas')
-  // }
-  // var personsToShow = persons
-  // const newFilter = () =>{
-  //   console.log(newFilter)
-  //   // var personsToShow={}
-  //   if (newFilter!==""){
-  //     console.log("event",newFilter);
-  //     // var personsToShow = persons.filter(person => person.name.match(newFilter));
-  //     // const rows = () => personsToShow.map(person =>
-  //     //   <Name
-  //     //     key={person.id}
-  //     //     person={person}
-  //     //   />
-  //     // )
-  //   }
-  //   else {
-  //     console.log("event",newFilter);
-  //     // personsToShow=persons;
-  //     // console.log("filteredPlacesin:",personsToShow);
-  //     // const rows = () => persons.map(person =>
-  //     //   <Name
-  //     //     key={person.id}
-  //     //     person={person}
-  //     //   />
-  //     // )
-  //   }
-  //   // console.log("filteredPlaces2:",personsToShow);
-  // }
   const rows = () => personsToShow.map(person =>
     <Name
       key={person.id}
