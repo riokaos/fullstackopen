@@ -1,9 +1,13 @@
 import React from 'react'
 
-const Name = ({person}) => {
-  console.log("person:",person);
+const Name = ({person, deletePerson}) => {
+  console.log("person in name:",person);
   return (
-    <li>{person.name} {person.number}</li>
+    <li>
+      {person.name} {person.number}
+      <button onClick={deletePerson}>delete</button>
+    </li>
+
   )
 }
 
