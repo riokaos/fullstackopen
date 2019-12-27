@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Name from './components/Name'
+import Notification from './components/Notification'
 // import axios from 'axios'
 import personService from './services/persons'
 
@@ -10,6 +11,7 @@ const App = () => {
   const [ newNumber, setNewNumber ] = useState()
   // const [showAll, setShowAll] = useState(true)
   const [filter, setFilter] = useState()
+  const [errorMessage, setErrorMessage] = useState(null)
 
   const hook = () => {
     console.log('effect activated');
@@ -65,7 +67,16 @@ const App = () => {
           setPersons(persons.concat(returnedPerson))
           setNewName('')
           setNewNumber('')
+          //write a message
+          // console.log("message:",);
+          setErrorMessage(
+              `Person '${returnedPerson.name}' added`
+            )
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 5000)
       })
+
       // axios
       //   .post('http://localhost:3001/persons',nameObject)
       //   .then(response =>{
@@ -93,6 +104,12 @@ const App = () => {
           .then(returnedPerson =>{
             setPersons(persons.map(person => person.name !== newName ? person : returnedPerson))
             console.log("setpersons;",setPersons);
+          setErrorMessage(
+              `Person '${person.name}' edited`
+            )
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 5000)
         })
         .catch(error => {
           alert(
@@ -148,6 +165,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errorMessage} />
       <div>
         filter shown with: <input
         type="search"
