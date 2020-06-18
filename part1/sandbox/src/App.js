@@ -6,12 +6,13 @@ import Footer from './components/Footer'
 import noteService from './services/notes'
 
 
+
 const App = (props) => {
   // const { notes } = props
   const [notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll] = useState(true)
-  const [errorMessage, setErrorMessage] = useState('some error happened...')
+  const [errorMessage, setErrorMessage] = useState('')
   // if showAll , notes, else use the filter
 
   const toggleImportanceOf = id => {
@@ -20,6 +21,7 @@ const App = (props) => {
     const note = notes.find(n => n.id === id)
     // create a new object that is an exact copy but with the important property
     const changedNote = { ...note, important: !note.important }
+    console.log("importance change changednote:",changedNote);
 
     console.log('effect');
     noteService
@@ -79,7 +81,20 @@ const App = (props) => {
         // console.log(response)
         setNotes(notes.concat(returnedNote))
         setNewNote('')
-    })
+      })
+      .catch(error => {
+        // const niceError = () => error.response.data.map(error =>error)
+        // let niceError = Object.values(error.response.data);
+        let niceError = error.response.data.error
+        setErrorMessage(
+            `error:'${niceError}''`
+          )
+        setTimeout(() => {
+            setErrorMessage(null)
+          }, 15000)
+        console.log("Error::",Object.values(error.response.data));
+        console.log(niceError);
+      })
   }
 
   console.log("notes:",notes);
