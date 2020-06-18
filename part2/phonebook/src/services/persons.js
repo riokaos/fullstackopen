@@ -1,5 +1,7 @@
 import axios from 'axios'
-const baseUrl = 'http://localhost:3001/persons'
+// const baseUrl = 'http://localhost:3001/api/persons'
+// const baseUrl = 'http://phonebo.herokuapp.com/api/persons'
+const baseUrl = '/api/persons'
 
 //We no longer return the promise returned by axios directly. Instead,
 //we assign the promise to the request variable and call its then method:
@@ -19,8 +21,9 @@ const update = (id, newObject) => {
 }
 
 const deletep = (id, newObject) => {
-  const request = axios.delete(`${baseUrl}/${id}`, newObject)
+  const request = axios.delete(`${baseUrl}/${id}`)
   console.log("objectd:",newObject);
+  console.log("url::",request);
   return request.then(response => response.data)
 }
 

@@ -1,198 +1,191 @@
 import React, { useState, useEffect } from 'react'
 import Name from './components/Name'
-import Notification from './components/Notification'
-// import axios from 'axios'
+import Filter from './components/Filter'
+import Form from './components/Form'
 import personService from './services/persons'
-
+import Notification from './components/Notification'
+import ErrorNotification from './components/ErrorNotification'
 
 const App = () => {
-  const [ persons, setPersons] = useState([])
-  const [ newName, setNewName ] = useState()
-  const [ newNumber, setNewNumber ] = useState()
-  // const [showAll, setShowAll] = useState(true)
-  const [filter, setFilter] = useState()
+  const [ persons, setPersons ] = useState([])
+  const [ newName, setNewName ] = useState('')
+  const [ newNumber, setNewNumber ] = useState('')
+  const [ filter, setFilter ] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
+  const [notiMessage, setNotiMessage] = useState(null)
 
-  const hook = () => {
-    console.log('effect activated');
+  useEffect(() => {
+    console.log('effect')
     personService
       .getAll()
-      .then(initialPersons=>{
-        setPersons(initialPersons)
+      .then(response => {
+        setPersons(response)
       })
     // axios
     //   .get('http://localhost:3001/persons')
     //   .then(response => {
-    //     console.log("fullfiled promise");
+    //     console.log('promise fulfilled')
     //     setPersons(response.data)
     //   })
-  }
-  useEffect(hook,[]);
-  console.log('render',persons.length,'persons');
+  }, [])
+  // console.log('render', persons.length, 'notes')
 
-// now filter on the name typed in the search
   const personsToShow = filter
-   ? persons.filter(person => person.name.indexOf(filter) >-1)
-   : persons
+    ? persons.filter(person => person.name.indexOf(filter) > -1)
+    : persons
 
   const rows = () => personsToShow.map(person =>
     <Name
       key={person.id}
       person={person}
-      deletePerson={() => deletePersonf(person.id)}
+      deletePerson={() => deletePersonMain(person.id)}
     />
   )
 
-
   const addName = (event) => {
-    // Find if that name already exist
-    const exists = Object.values(persons).reduce((t, {name}) =>newName===name, 0)
-    console.log("object value:",Object.values(persons));
-    console.log("Newname:",newName);
-    console.log("exist",exists);
-    if (!exists)
-    {
-      event.preventDefault()
+    event.preventDefault()
+    // const exists = Object.values(persons).reduce((t, {name}) =>newName===name, 0)
+    // const exists = persons.filter(person =>person.name ===newName)
+    console.log(persons);
+    // console.log(person);
+    console.log(newName);
+    const exists = persons.findIndex((person) => person.name===newName)
+    if (exists<0) {
       const nameObject = {
         name: newName,
-        number: newNumber,
         date: new Date().toISOString(),
-        id: persons.length + 1,
-
+        number: newNumber
       }
       personService
         .create(nameObject)
-        .then(returnedPerson => {
-          // console.log(response)
-          setPersons(persons.concat(returnedPerson))
+        .then(createdPerson => {
+          setPersons(persons.concat(createdPerson))
           setNewName('')
           setNewNumber('')
-          //write a message
-          // console.log("message:",);
-          setErrorMessage(
-              `Person '${returnedPerson.name}' added`
+          setNotiMessage(
+              `Person '${createdPerson.name}' added`
             )
             setTimeout(() => {
-              setErrorMessage(null)
+              setNotiMessage(null)
             }, 5000)
-      })
-
+        })
+        .catch(error => {
+          // const niceError = () => error.response.data.map(error =>error)
+          // let niceError = Object.values(error.response.data);
+          let niceError = error.response.data.error
+          setErrorMessage(
+              `error:'${niceError}''`
+            )
+          setTimeout(() => {
+              setErrorMessage(null)
+            }, 15000)
+          console.log("Error::",Object.values(error.response.data));
+          console.log(niceError);
+        })
       // axios
-      //   .post('http://localhost:3001/persons',nameObject)
-      //   .then(response =>{
-      //     console.log(response);
+      //   .post('http://localhost:3001/persons', nameObject)
+      //   .then(response => {
+      //     console.log(response)
       //     setPersons(persons.concat(response.data))
       //     setNewName('')
       //     setNewNumber('')
       //   })
-    }
-    else {
-      // event.preventDefault()
-      // const tempAnswer=newName +' is already added to the phonebook'
-      // alert(tempAnswer);
 
-      const person = persons.find(n => n.name === newName)
-      // create a new object that is an exact copy but with the important property
-      const changedPerson = { ...person, number: newNumber }
-      console.log("changed:",changedPerson);
-      console.log("newnumber:",newName);
-      console.log("setnew:",newNumber);
-      const message =`${person.name} is already in the phonebook, do you want to update this phone number?`
-      if (window.confirm(message)) {
-        personService
-          .update(person.id, changedPerson)
-          .then(returnedPerson =>{
-            setPersons(persons.map(person => person.name !== newName ? person : returnedPerson))
-            console.log("setpersons;",setPersons);
-          setErrorMessage(
-              `Person '${person.name}' edited`
-            )
-            setTimeout(() => {
-              setErrorMessage(null)
-            }, 5000)
-        })
-        .catch(error => {
-          alert(
-            `the note '${person.name}' was already deleted from server`
-          )
-          //remove an allready deleted note from the state
-          setPersons(persons.filter(n => n.name !== newName))
-        })
-      } //enf if window.confirm
     }
+    else
+      {
+        let message=`${newName} is already in the phonebook, do you want to update this phone number?`;
+        if (window.confirm(message)) {
+          const modPerson = persons.find(n => n.name === newName)
+          const changedPerson = {...modPerson,number:newNumber};
+          personService
+            .update(modPerson.id,changedPerson)
+            .then(returnedPerson => {
+              setPersons(persons.map(person => person.name !== newName ? person : returnedPerson))
+              setNewName('')
+              setNewNumber('')
+              setNotiMessage(
+                  `Person '${returnedPerson.name}' modified`
+                )
+                setTimeout(() => {
+                  setNotiMessage(null)
+                }, 5000)
+            })
+          // axios
+          //   .put('http://localhost:3001/persons/'+modPerson.id, changedPerson)
+          //   .then(response => {
+          //     console.log(response)
+          //     setPersons(persons.map(person => person.name !== newName ? person : response.data))
+          //     setNewName('')
+          //     setNewNumber('')
+          //   })
+          .catch(error => {
+            setErrorMessage(
+                `Person '${modPerson.name}' was already deleted`
+              )
+            setTimeout(() => {
+                setErrorMessage(null)
+              }, 15000)
+            // alert(
+            //   `the note '${person.name}' was already deleted from server`
+            // )
+            //remove an allready deleted note from the state
+            setPersons(persons.filter(n => n.name !== newName))
+          })
+        }
+      }
   }
 
-  const deletePersonf = id => {
-    // console.log("persons1:",persons);
-    // const url = `http://localhost:3001/notes/${id}`
-    // find the note we want to modify and assign it to the note variable
-    const person = persons.find(n => n.id === id)
-    // create a new object that is an exact copy but with the important property
-    const changedPerson = persons.filter(n => n.id !== id)
-    console.log("changepersons:",changedPerson);
-    const message =`Do you really want to delete ${person.name} ?`
+  const deletePersonMain = id => {
+    const personD = persons.find(n => n.id === id)
+    const restPersons = persons.filter(n => n.id !== id)
+    let message=`Are you sure you want to remove ${personD.name} ?`;
     if (window.confirm(message)) {
-      console.log("delete");
       personService
         .deletep(id)
-        .then(returnedPerson =>{
-          setPersons(changedPerson)
-      })
+        .then(returnedPerson => {
+          const toAdd = persons.map(person => person.id !== id ? person : returnedPerson.data);
+          setPersons(restPersons)
+          setNewName('')
+        })
       .catch(error => {
         alert(
-          `the note '${person.content}' was already deleted from server`
+          `the note '${personD.name}' was already deleted from server`
         )
         //remove an allready deleted note from the state
         setPersons(persons.filter(n => n.id !== id))
       })
-    } //if confirmation window
+    }
   }
 
-  // console.log("persons3:",persons);
-  const handleNameChange = (event) =>{
-    console.log(event.target.value)
+  const handleNameChange = (event) => {
     setNewName(event.target.value)
   }
+
   const handleNumberChange = (event) =>{
-    console.log("event:",event.target.value)
+    // console.log("event filter:",event.target.value)
     setNewNumber(event.target.value)
   }
+
   const handleSetFilter = (event) =>{
-    console.log("event filter:",event.target.value)
+    // console.log("event filter:",event.target.value)
     setFilter(event.target.value)
   }
-
   return (
     <div>
-      <h2>Phonebook</h2>
-      <Notification message={errorMessage} />
+      <h2>Phonebook V3.3d (3.19-3.21)</h2>
+      <Notification message={notiMessage} />
+      <ErrorNotification message={errorMessage} />
       <div>
-        filter shown with: <input
-        type="search"
-        onChange={handleSetFilter}
-        />
+        <Filter value="filter" handleSetFilter={handleSetFilter}/>
       </div>
-      <form onSubmit={addName}>
-      <div>debug: {newName}</div>
-        <div>
-          name: <input
-          value={newName}
-          onChange={handleNameChange}
-          />
-        </div>
-        <div>
-          number: <input
-          value={newNumber}
-          onChange={handleNumberChange}
-          />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <h2>Add contact</h2>
+      <Form addContact={addName} newName={newName} newNumber={newNumber}
+      handleNaChange={handleNameChange} handleNuChange={handleNumberChange} />
       <h2>Numbers</h2>
-      {rows()}
-
+      <ul>
+        {rows()}
+      </ul>
     </div>
   )
 }

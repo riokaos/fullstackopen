@@ -1,0 +1,230 @@
+import React, { useState, useEffect } from 'react'
+import Name from './components/Name'
+import Notification from './components/Notification'
+import ErrorNotification from './components/ErrorNotification'
+// import axios from 'axios'
+import personService from './services/persons'
+//test
+
+const App = () => {
+  const [ persons, setPersons] = useState([])
+  const [ newName, setNewName ] = useState()
+  const [ newNumber, setNewNumber ] = useState()
+  const [ maxId, setMaxId ] = useState()
+  // const [showAll, setShowAll] = useState(true)
+  const [filter, setFilter] = useState()
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [notiMessage, setNotiMessage] = useState(null)
+  const hook = () => {
+    console.log('effect hook');
+    personService
+      .getAll()
+      .then(initialPersons=>{
+        setPersons(initialPersons)
+        console.log("initialpersons2:",initialPersons);
+        const maxIdValue = Math.max(...initialPersons.map(o => o.id), 0);
+        setMaxId(maxIdValue)
+        console.log("max hook:",maxIdValue);
+        console.log("state maxID:",maxId);
+        console.log("people",persons);
+      })
+    // axios
+    //   .get('http://localhost:3001/persons')
+    //   .then(response => {
+    //     console.log("fullfiled promise");
+    //     setPersons(response.data)
+    //   })
+  }
+  useEffect(hook,[]);
+  // console.log('render',persons.length,'persons');
+  // console.log('typeof',typeof(persons));
+
+// now filter on the name typed in the search
+  const personsToShow = filter
+   ? persons.filter(person => person.name.indexOf(filter) >-1)
+   : persons
+
+  const rows = () => personsToShow.map(person =>
+    <Name
+      key={person.id}
+      person={person}
+      deletePerson={() => deletePersonf(person.id)}
+    />
+  )
+
+ //  console.log("persons to show::",personsToShow); //array
+ // // const rows = () => Object.keys(countries).map(country =>
+ //  console.log("count of persons::",personsToShow.length);
+ //  console.log("persons2show type::",typeof(personsToShow));
+
+  const addName = (event) => {
+    // Find if that name already exist
+    const exists = Object.values(persons).reduce((t, {name}) =>newName===name, 0)
+    console.log("object value:",Object.values(persons));
+    // console.log("max id:",Object.values(persons.id));
+    console.log("Newname:",newName);
+    console.log("exist",exists);
+    console.log("max before creation:",maxId);
+    if (!exists)
+    {
+      event.preventDefault()
+      const nameObject = {
+        name: newName,
+        number: newNumber,
+        // date: new Date().toISOString(),
+        // id: persons.length + 1,
+        // id: maxId + 1,
+
+      }
+      console.log("newObject:",nameObject);
+      personService
+        .create(nameObject)
+        .then(returnedPerson => {
+          // console.log(response)
+          setPersons(persons.concat(returnedPerson))
+          setNewName('')
+          setNewNumber('')
+          //write a message
+          // console.log("message:",);
+          setNotiMessage(
+              `Person '${returnedPerson.name}' added`
+            )
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 5000)
+      })
+
+      // axios
+      //   .post('http://localhost:3001/persons',nameObject)
+      //   .then(response =>{
+      //     console.log(response);
+      //     setPersons(persons.concat(response.data))
+      //     setNewName('')
+      //     setNewNumber('')
+      //   })
+    }
+    else {
+      // event.preventDefault()
+      // const tempAnswer=newName +' is already added to the phonebook'
+      // alert(tempAnswer);
+
+      const person = persons.find(n => n.name === newName)
+      // create a new object that is an exact copy but with the important property
+      const changedPerson = { ...person, number: newNumber }
+      // console.log("changed:",changedPerson);
+      // console.log("newnumber:",newName);
+      // console.log("setnew:",newNumber);
+      // console.log("trying to modyf existing");
+      const message =`${person.name} is already in the phonebook, do you want to update this phone number?`
+      if (window.confirm(message)) {
+        personService
+          .update(person.id, changedPerson)
+          .then(returnedPerson =>{
+            // console.log("no error in modification");
+            setPersons(persons.map(person => person.name !== newName ? person : returnedPerson))
+            console.log("setpersons;",setPersons);
+          setNotiMessage(
+              `Person '${person.name}' edited`
+            )
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 5000)
+        })
+        .catch(error => {
+          console.log("yes error in modification");
+          setNotiMessage(
+              `Person '${person.name}' was already deleted`
+            )
+          setTimeout(() => {
+              setErrorMessage(null)
+            }, 15000)
+          // alert(
+          //   `the note '${person.name}' was already deleted from server`
+          // )
+          //remove an allready deleted note from the state
+          setPersons(persons.filter(n => n.name !== newName))
+        })
+      } //enf if window.confirm
+    }
+  }
+
+  const deletePersonf = id => {
+    // find the note we want to modify and assign it to the note variable
+    const person = persons.find(n => n.id === id)
+    console.log("person to delete:",person);
+    // create a new object that is an exact copy but with the important property
+    const changedPerson = persons.filter(n => n.id !== id)
+    console.log("changepersons:",changedPerson);
+    const message =`Do you really want to delete ${person.name} ?`
+    if (window.confirm(message)) {
+      console.log("delete");
+      console.log("persons to show delete::",personsToShow); //array
+      personService
+        .deletep(id)
+        .then(returnedPerson =>{
+          setPersons(changedPerson)
+          console.log("changepersons in:",changedPerson);
+          console.log("persons to show end if:",persons); //array
+          console.log("persons to show delete2::",personsToShow);
+      })
+      .catch(error => {
+        alert(
+          `the note '${person.content}' was already deleted from server`
+        )
+        //remove an allready deleted note from the state
+        setPersons(persons.filter(n => n.id !== id))
+      })
+    } //if confirmation window
+  }
+
+  // console.log("persons3:",persons);
+  const handleNameChange = (event) =>{
+    // console.log(event.target.value)
+    setNewName(event.target.value)
+  }
+  const handleNumberChange = (event) =>{
+    // console.log("event:",event.target.value)
+    setNewNumber(event.target.value)
+  }
+  const handleSetFilter = (event) =>{
+    // console.log("event filter:",event.target.value)
+    setFilter(event.target.value)
+  }
+
+  return (
+    <div>
+      <h2>Phonebook V.3.0</h2>
+      <Notification message={notiMessage} />
+      <ErrorNotification message={errorMessage} />
+      <div>
+        filter shown with: <input
+        type="search"
+        onChange={handleSetFilter}
+        />
+      </div>
+      <form onSubmit={addName}>
+      <div>debug: {newName}</div>
+        <div>
+          name: <input
+          value={newName}
+          onChange={handleNameChange}
+          />
+        </div>
+        <div>
+          number: <input
+          value={newNumber}
+          onChange={handleNumberChange}
+          />
+        </div>
+        <div>
+          <button type="submit">add</button>
+        </div>
+      </form>
+      <h2>Numbers</h2>
+      {rows()}
+
+    </div>
+  )
+}
+
+export default App
