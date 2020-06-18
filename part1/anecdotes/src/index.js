@@ -14,6 +14,7 @@ const Maxvoted = ({anecdotes,votes}) => {
       <p>Has {votes[i]} votes</p></div>
   )
 }
+
 const App = (props) => {
   const [selected, setSelected] = useState(0)
   const arrayOfCeros=new Array(props.anecdotes.length).fill(0)
@@ -21,20 +22,16 @@ const App = (props) => {
 
   console.log("array vote:",vote);
 
-  // console.log("array",arrayOfCeros);
   const handleRandomClick = () => {
     let newQuoate=Math.floor(Math.random()*props.anecdotes.length);
     setSelected(newQuoate)
   }
   const handleVoteClick = () => {
-    // console.log("array vote[selected]:",vote[selected]);
-    const result = vote[selected]+1;
+    console.log("array vote2:",vote);
     vote[selected]=vote[selected]+1
-    // console.log("result",result);
     const copyVote = [ ...vote ]
+    console.log("array vote3:",vote);
     setVote(copyVote)
-    // vote[selected]++
-    // list[selected]++
   }
 
   return (
