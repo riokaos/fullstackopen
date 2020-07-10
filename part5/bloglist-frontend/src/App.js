@@ -1,27 +1,31 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import ErrorNotification from './components/ErrorNotification'
+import LoginForm from './components/LoginForm'
+import BlogForm from './components/BlogForm'
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [newBlog, setNewBlog] = useState('')
-  const [newAuthor, setNewAuthor] = useState('')
-  const [newUrl, setNewUrl] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [notiMessage, setNotiMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
+
   useEffect(() => {
-    blogService.getAll().then(blogs =>
+    blogService.getAll().then(blogs => {
+      console.log('in blogs:',blogs)
+      blogs.sort((a, b) => (b.likes > a.likes) ? 1 : -1)
+      console.log('in blogs sorted:',blogs)
       setBlogs( blogs )
-    )
+    })
   }, [])
-  // console.log("user out:",user);
+
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     // console.log("logger User:",JSON.parse(loggedUserJSON));
@@ -58,103 +62,116 @@ const App = () => {
   }
 
   const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-        username
-          <input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password
-          <input
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type="submit">login</button>
-    </form>
-  )
-
-  const blogForm = () => (
-    <form onSubmit={addBlog}>
-      Title: <input
-        value={newBlog}
-        onChange={handleBlogChange}
+    <Togglable buttonLabel='login'>
+      <LoginForm
+        username={username}
+        password={password}
+        handleUsernameChange={({ target }) => setUsername(target.value)}
+        handlePasswordChange={({ target }) => setPassword(target.value)}
+        handleSubmit={handleLogin}
       />
-      <div>
-        Author:
-          <input
-          type="text"
-          value={newAuthor}
-          name="Author"
-          onChange={({ target }) => setNewAuthor(target.value)}
-        />
-      </div>
-      <div>
-        Url:
-          <input
-          type="text"
-          value={newUrl}
-          name="url"
-          onChange={({ target }) => setNewUrl(target.value)}
-        />
-      </div>
-      <button type="submit">create</button>
-    </form>
+    </Togglable>
   )
 
-  const handleBlogChange = (event) => {
-    console.log(event.target.value)
-    setNewBlog(event.target.value)
-  }
+  const blogFormRef = useRef()
+  const blogForm = () => (
+    <Togglable buttonLabel='New Blog' ref={blogFormRef}>
+      <BlogForm createBlog={addBlog} />
+    </Togglable>
+  )
 
-  const handleLogOut = (event) => {
+  const handleLogOut = () => {
     // console.log(event.target.value)
     setUser(null)
     window.localStorage.clear()
   }
 
-  const addBlog = (event) => {
-    event.preventDefault()
-    const blogObject = {
-      title: newBlog,
-      author: newAuthor,
-      url: newUrl
-      }
-
+  const addBlog = (blogObject) => {
+    // event.preventDefault()
+    blogFormRef.current.toggleVisibility()
     blogService
       .create(blogObject)
       .then(returnedBlog => {
         // console.log(response)
         setBlogs(blogs.concat(returnedBlog))
-        setNewBlog('')
-        setNewAuthor('')
-        setNewUrl('')
         setNotiMessage(
-            `Blog '${returnedBlog.title}' added`
-          )
-          setTimeout(() => {
-            setNotiMessage(null)
-          }, 5000)
+          `Blog '${returnedBlog.title}' added`
+        )
+        setTimeout(() => {
+          setNotiMessage(null)
+        }, 5000)
       })
       .catch(error => {
         let niceError = error.response.data.error
         setErrorMessage(
-            `error:'${niceError}''`
-          )
+          `error:'${niceError}''`
+        )
         setTimeout(() => {
-            setErrorMessage(null)
-          }, 15000)
-        console.log("Error::",Object.values(error.response.data));
-        console.log(niceError);
+          setErrorMessage(null)
+        }, 15000)
+        console.log('Error::',Object.values(error.response.data))
+        console.log(niceError)
       })
   }
+
+  const addLike = id => {
+    // find the note we want to modify and assign it to the note variable
+    const blog = blogs.find(n => n.id === id)
+    // create a new object that is an exact copy but with the important property
+    const newLikes = blog.likes ? blog.likes + 1 : 1
+    const changedBlog = { ...blog, likes: newLikes }
+    console.log('importance change changednote:',changedBlog)
+    console.log('effect')
+    blogService
+      .update(id, changedBlog)
+      .then(returnedBlog => {
+        var byLikes = blogs.map(blog => blog.id !== id ? blog : returnedBlog).slice(0)
+        byLikes.sort((a, b) => (b.likes > a.likes) ? 1 : -1)
+        setBlogs(byLikes)
+      })
+      .catch(error => {
+        setErrorMessage(
+          `Blog '${blog.title}'was already removed from server: ${error}`
+        )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+        //remove an allready deleted note from the state
+        setBlogs(blogs.filter(n => n.id !== id))
+      })
+  }
+
+  const deleteBlogMain = id => {
+    const blogD = blogs.find(n => n.id === id)
+    const restBlogs = blogs.filter(n => n.id !== id)
+    let message=`Are you sure you want to remove '${blogD.title}' ?`
+    if (window.confirm(message)) {
+      blogService
+        .deleteb(id)
+        .then(() => {
+          // const toAdd = blogs.map(blog => blog.id !== id ? blog : returnedBlog.data);
+          setBlogs(restBlogs)
+          // setNewName('')
+        })
+        .catch(error => {
+          alert(
+            `the note '${blogD.title}' was already deleted from server : ${error}`
+          )
+          //remove an allready deleted note from the state
+          setBlogs(blogs.filter(n => n.id !== id))
+        })
+    }
+  }
+
+  const rows = () => blogs.map(blog =>
+    <Blog
+      key={blog.id}
+      blog={blog}
+      likeAdder={() => addLike(blog.id)}
+      blogDel={() => deleteBlogMain(blog.id)}
+      loggedUser={user === null  ? null : user.username}
+    />
+  )
 
   return (
     <div>
@@ -162,18 +179,15 @@ const App = () => {
       <Notification message={notiMessage} />
       <ErrorNotification message={errorMessage} />
       {user === null ?
-         loginForm():
-         <div>
-            <p>{user.name} logged in <button onClick={() => handleLogOut()}>
-            Log out
-            </button></p>
-            {blogForm()}
-         </div>
-
-       }
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
-      )}
+        loginForm():
+        <div>
+          <p>{user.name} logged in <button onClick={() => handleLogOut()}>
+          Log out
+          </button></p>
+          {blogForm()}
+        </div>
+      }
+      {rows()}
     </div>
   )
 }
