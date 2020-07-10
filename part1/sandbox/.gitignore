@@ -3,6 +3,7 @@
 # dependencies
 /part3/phonebook
 /node_modules
+/coverage
 /.pnp
 .pnp.js
 
