@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom'
 // part 1 sandbox
 
 const Display = ({ counter }) => <div>{counter}</div>
