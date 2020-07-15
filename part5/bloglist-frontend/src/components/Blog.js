@@ -27,17 +27,16 @@ const Blog = ({ blog, likeAdder, blogDel, loggedUser }) => {
   // console.log("visible:",visible);
 
   return (
-    <div style={blogStyle}>{blog.title}
-      <div style={hideWhenVisible}>
-        <button onClick={toggleVisibility}>Show</button>
+    <div style={blogStyle} className='blog'>
+      <div style={hideWhenVisible} className='blogDefault'>{blog.title}<br/>{blog.author}
+        <button onClick={toggleVisibility} id='show'>Show</button>
 
       </div>
-      <div style={showWhenVisible}>
+      <div style={showWhenVisible} className='blogNonDefault'>{blog.title}<br/>{blog.author}
 
         <button onClick={toggleVisibility}>Hide</button>
-        {blog.url}<br/>
-        likes {blog.likes} <button onClick={likeAdder}>Like</button><br/>
-        {blog.author}
+        <br/>url: {blog.url}<br/>
+        likes: {blog.likes} <button id='likes' onClick={likeAdder}>Like</button><br/>
         {blog.user.username === loggedUser ? deleteButton(): null}
 
       </div>
