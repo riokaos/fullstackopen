@@ -193,9 +193,11 @@ const App = (props) => {
           third
         </Togglable>
       </div>
-      <ul>
-        {rows()}
-      </ul>
+      <div className="note-rows">
+        <ul>
+          {rows()}
+        </ul>
+      </div>
       <Footer />
     </div>
 

@@ -49,8 +49,10 @@ test('clicking the button calls event handler once', () => {
   const component = render(
     <Note note={note} toggleImportance={mockHandler} />
   )
+  component.debug()
 
   const button = component.getByText('make not important')
+  // console.log("button:",button);
   fireEvent.click(button)
 
   expect(mockHandler.mock.calls).toHaveLength(1)
