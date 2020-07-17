@@ -17,10 +17,14 @@ const Blog = ({ blog, likeAdder, blogDel, loggedUser }) => {
   const toggleVisibility = () => {
     setVisible(!visible)
   }
-
+  // console.log("blog title:",blog.title);
+  // console.log("blog user:",blog.user);
+  // console.log("type::",JSON.stringify(blog.user));
+  // console.log("validation:",(blog.user) === undefined);
+  // console.log("validation user:",(blog.user.username) === loggedUser);
   const deleteButton = () => (
     // {
-    <button className="button button1" onClick={blogDel}>delete</button>
+    <button id="delete" className="button button1" onClick={blogDel}>delete</button>
     // }
   )
 
@@ -37,7 +41,10 @@ const Blog = ({ blog, likeAdder, blogDel, loggedUser }) => {
         <button onClick={toggleVisibility}>Hide</button>
         <br/>url: {blog.url}<br/>
         likes: {blog.likes} <button id='likes' onClick={likeAdder}>Like</button><br/>
-        {blog.user.username === loggedUser ? deleteButton(): null}
+        {blog.user === undefined ? null
+          :
+        blog.user.username === loggedUser ? deleteButton(): null
+        }
 
       </div>
     </div>

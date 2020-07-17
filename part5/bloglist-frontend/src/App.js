@@ -62,13 +62,13 @@ const App = () => {
   }
 
   const loginForm = () => (
-    <Togglable buttonLabel='login'>
+    <Togglable buttonLabel='login' startOpen='true'>
       <LoginForm
-        username={username}
-        password={password}
-        handleUsernameChange={({ target }) => setUsername(target.value)}
-        handlePasswordChange={({ target }) => setPassword(target.value)}
-        handleSubmit={handleLogin}
+        username = {username}
+        password = {password}
+        handleUsernameChange = {({ target }) => setUsername(target.value)}
+        handlePasswordChange = {({ target }) => setPassword(target.value)}
+        handleSubmit = {handleLogin}
       />
     </Togglable>
   )
@@ -181,7 +181,7 @@ const App = () => {
       {user === null ?
         loginForm():
         <div>
-          <p>{user.name} logged in <button onClick={() => handleLogOut()}>
+          <p>{user.name} logged in <button id="log-out" onClick={() => handleLogOut()}>
           Log out
           </button></p>
           {blogForm()}
