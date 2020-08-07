@@ -32,10 +32,17 @@ const anecdoteReducer = (state = initialState, action) => {
         ...anecdoteToChange,
         votes: anecdoteToChange.votes +1
       }
+      // const notificationToChange = state.notification
+      // const changedNotification = {
+      //   ...notificationToChange, 'Note added'
+      // }
       console.log("state::",state);
-      return state.map(anecdote =>
-        anecdote.id !== id ? anecdote : changedAnecdote
-      ).sort((a, b) => (b.votes > a.votes) ? 1 : -1)
+      return (
+         state.map(anecdote =>
+          anecdote.id !== id ? anecdote : changedAnecdote
+        ).sort((a, b) => (b.votes > a.votes) ? 1 : -1)
+
+      )
      }
     default:
     console.log("default state");
