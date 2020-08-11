@@ -1,3 +1,5 @@
+import anecdoteService from '../services/anecdotes'
+import notificationReducer , { setNotification } from './notificationReducer'
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -18,13 +20,15 @@ const asObject = (anecdote) => {
 
 const initialState = anecdotesAtStart.map(asObject)
 initialState.sort((a, b) => (b.votes > a.votes) ? 1 : -1)
-console.log("initial state:", initialState);
+// console.log("initial state:", initialState);
 
-const anecdoteReducer = (state = initialState, action) => {
+const anecdoteReducer = (state = [], action) => {
   switch(action.type) {
     case 'NEW_ANECDOTE':
       // console.log("action::", action.data);
       return state.concat(action.data)
+    case 'INIT_ANECDOTES':
+      return action.data
     case 'VOTE': {
       const id = action.data.id
       const anecdoteToChange = state.find(n => n.id === id)
@@ -51,23 +55,45 @@ const anecdoteReducer = (state = initialState, action) => {
 }
 
 export const createAnecdote = (content) => {
-  return {
-    type: 'NEW_ANECDOTE',
-    data: {
-      content,
-      id: getId(),
-      votes: 0
-    }
+  return async dispatch => {
+    const newAnecdote = await anecdoteService.createNew(content)
+    dispatch({
+      type: 'NEW_ANECDOTE',
+      data: newAnecdote
+    })
+    dispatch(setNotification(`New anecdote '${content}' created `,5))
   }
 }
 
-export const vote = (id) => {
-  // console.log("vote is here::", vote);
-  return {
-    type: 'VOTE',
-    data: { id }
+export const initializeAnecdotes = () => {
+  return async dispatch => {
+    const anecdotes = await anecdoteService.getAll()
+    anecdotes.sort((a, b) => (b.votes > a.votes) ? 1 : -1)
+    dispatch({
+      type: 'INIT_ANECDOTES',
+      data: anecdotes,
+    })
+
   }
-  // return {...vote,votes: vote.good +1}
+}
+
+export const vote = (id, content) => {
+  // console.log("vote is here::", vote);
+  return async dispatch => {
+    const anecdotes = await anecdoteService.getAll()
+    const anecdote = anecdotes.find(n => n.id === id)
+    const newVotes = anecdote.votes ? anecdote.votes + 1 : 1
+    const changedAnecdote = { ...anecdote, votes: newVotes }
+    const id_vote = await anecdoteService.update(id,changedAnecdote)
+    dispatch({
+      type: 'VOTE',
+      data: { id },
+    })
+    dispatch(setNotification(`Voted for '${anecdote.content}'  `,5))
+    // setTimeout(() => {
+    //     dispatch(setNotification(``));
+    //   }, 5000)
+  }
 }
 
 export default anecdoteReducer
