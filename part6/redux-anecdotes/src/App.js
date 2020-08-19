@@ -15,6 +15,8 @@ const App = () => {
   }, [dispatch])
 
   const notiList = useSelector(state => state.notification)
+  // const timer = useSelector(state => state.notification)
+  // console.log("timer id:", timer);
   // console.log("not_list:", notiList);
   // console.log("length:", notiList.length);
 

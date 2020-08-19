@@ -1,23 +1,30 @@
 import React from 'react'
-import { useDispatch } from 'react-redux'
+import { connect, useSelector } from 'react-redux'
 import { createAnecdote } from '../reducers/anecdoteReducer'
 import { setNotification, removeNotification } from '../reducers/notificationReducer'
 import anecdoteService from '../services/anecdotes'
 
 const NewAnecdote = (props) => {
-  const dispatch = useDispatch()
-
+  // const dispatch = useDispatch()
+  console.log(createAnecdote);
+  console.log(props.createAnecdote);
+  // to fix alert problems
+  const timer_id = useSelector(state => {
+    return state.timerId
+  })
+  
   const addAnecdote = async (event) => {
     event.preventDefault()
     const content = event.target.anecdote.value
     event.target.anecdote.value = ''
-    // const newAnecdote = await anecdoteService.createNew(content)
-    dispatch(createAnecdote(content))
-    // dispatch(setNotification(`New anecdote '${content}' created `))
-    // setTimeout(() => {
-    //     dispatch(setNotification(``));
-    //   }, 5000)
+
+    // dispatch(createAnecdote(content))
+
+    // Using Connect
+
+    props.createAnecdote(content,timer_id)
   }
+
 
   return (
     <form onSubmit={addAnecdote}>
@@ -27,4 +34,9 @@ const NewAnecdote = (props) => {
   )
 }
 
-export default NewAnecdote
+export default connect(
+  null,
+  { createAnecdote }
+)(NewAnecdote)
+
+// export default NewAnecdote

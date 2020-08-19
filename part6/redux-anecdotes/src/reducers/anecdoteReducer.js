@@ -54,14 +54,14 @@ const anecdoteReducer = (state = [], action) => {
   }
 }
 
-export const createAnecdote = (content) => {
+export const createAnecdote = (content, timer_id) => {
   return async dispatch => {
     const newAnecdote = await anecdoteService.createNew(content)
     dispatch({
       type: 'NEW_ANECDOTE',
       data: newAnecdote
     })
-    dispatch(setNotification(`New anecdote '${content}' created `,5))
+    dispatch(setNotification(`New anecdote '${content}' created `, 5, timer_id))
   }
 }
 
@@ -77,8 +77,8 @@ export const initializeAnecdotes = () => {
   }
 }
 
-export const vote = (id, content) => {
-  // console.log("vote is here::", vote);
+export const vote = (id, timer_id) => {
+  console.log("vote content is here::", timer_id);
   return async dispatch => {
     const anecdotes = await anecdoteService.getAll()
     const anecdote = anecdotes.find(n => n.id === id)
@@ -89,7 +89,7 @@ export const vote = (id, content) => {
       type: 'VOTE',
       data: { id },
     })
-    dispatch(setNotification(`Voted for '${anecdote.content}'  `,5))
+    dispatch(setNotification(`Voted for '${anecdote.content}'  `,5,timer_id))
     // setTimeout(() => {
     //     dispatch(setNotification(``));
     //   }, 5000)

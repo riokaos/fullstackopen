@@ -1,10 +1,17 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, connect } from 'react-redux'
 
-const Notification = () => {
+// has the connect disabled
+
+const Notification = (props) => {
   const notification = useSelector(state => {
     return state.notification
   })
+  // const timer_id = useSelector(state => {
+  //   return state.timerId
+  // })
+  // console.log("the timer id::",timer_id);
+  // const notification = props.notification
   const style = {
     border: 'solid',
     padding: 5,
@@ -17,4 +24,11 @@ const Notification = () => {
   )
 }
 
+// const mapStateToProps = state => {
+//     return {
+//         notification: state.notification
+//     }
+// }
+
 export default Notification
+// export default connect(mapStateToProps, null)(Notification);

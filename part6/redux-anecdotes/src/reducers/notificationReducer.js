@@ -1,3 +1,5 @@
+import { useSelector } from 'react-redux'
+import timerReducer , { setTimerId } from './timerReducer'
 const notificationAtStart = ""
 
 const notificationReducer = (state = notificationAtStart, action) => {
@@ -15,16 +17,23 @@ const notificationReducer = (state = notificationAtStart, action) => {
   }
 }
 
-export const setNotification = (notification,secs) => {
+export const setNotification = (notification,secs,timer_id) => {
+  // const { timer_id } = store.getState();
+  // console.log("the timer id::",state);
   return async dispatch => {
     dispatch({
       type: 'SET_NOTIFICATION',
       data: notification
     })
-    setTimeout(() => {
-        dispatch(clearNotification(``));
-      }, secs*1000)
+    clearTimeout(timer_id)
 
+    const timerId = setTimeout(() => {
+        dispatch(clearNotification(``,timerId));
+      }, secs*1000)
+    // clearTimeout(timerId-1)
+    console.log("timerId:",timerId);
+    dispatch(setTimerId(timerId))
+    // console.log("whole state:",state);
   }
   // return dispatch => {
   //   dispatch({type: 'SET_NOTIFICATION',
@@ -35,34 +44,36 @@ export const setNotification = (notification,secs) => {
   // }
 }
 
-export const clearNotification =() => {
+export const clearNotification =(message,timer_id) => {
+  console.log("my timmer:",timer_id);
+  // clearTimeout(timer_id-1)
   return {
     type: 'SET_NOTIFICATION',
     data: ''
   }
 }
 
-export const showNotification = (message, time) => {
-  return dispatch => {
-    dispatch({
-      type: 'NOTIFICATION',
-      message: message
-    })
+// export const showNotification = (message, time) => {
+//   return dispatch => {
+//     dispatch({
+//       type: 'NOTIFICATION',
+//       message: message
+//     })
+//
+//     setTimeout(() => {
+//       dispatch({
+//         type: 'NOTIFICATION',
+//         data: null,
+//       })
+//     }, time * 1000)
+//   }
+// }
 
-    setTimeout(() => {
-      dispatch({
-        type: 'NOTIFICATION',
-        data: null,
-      })
-    }, time * 1000)
-  }
-}
-
-export const removeNotification= () => {
-  return {
-    type: 'CLEAR_NOTIFICATION',
-    data: null
-  }
-}
+// export const removeNotification= () => {
+//   return {
+//     type: 'CLEAR_NOTIFICATION',
+//     data: null
+//   }
+// }
 
 export default notificationReducer
