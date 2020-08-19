@@ -6,6 +6,7 @@ import NewNote from './components/NewNote.js'
 import Notes from './components/Notes.js'
 import VisibilityFilter from './components/VisibilityFilter.js'
 // import noteService from './services/notes'
+// version with old connect to redux
 
 
 const App = () => {
