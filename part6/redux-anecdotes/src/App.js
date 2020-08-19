@@ -7,6 +7,7 @@ import Filter from './components/Filter.js'
 import {initializeAnecdotes} from './reducers/anecdoteReducer'
 // import anecdoteService from './services/anecdotes'
 // import { initializeAnecdotes } from './reducers/anecdoteReducer'
+// version with old connect to redux
 
 const App = () => {
   const dispatch = useDispatch()
