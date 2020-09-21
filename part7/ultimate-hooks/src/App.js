@@ -1,7 +1,17 @@
 
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
+import styled from 'styled-components'
+import {Button, Input, Navigation, Footer, Page} from './components/Styles'
 
+import {
+  BrowserRouter as Router,
+  Switch, Route, Link, useParams, useRouteMatch, Redirect, useHistory
+} from "react-router-dom"
+
+const padding = {
+  paddingRight: 5
+}
 
 const useField = (type) => {
   const [value, setValue] = useState('')
@@ -97,22 +107,49 @@ const App = () => {
   }
 
   return (
-    <div>
-      <h2>notes</h2>
-      <form onSubmit={handleNoteSubmit}>
-        <input {...content} />
-        <button>create</button>
-      </form>
-      {notes.map(n => <p key={n.id}>{n.content}</p>)}
+    <Page>
+      <Router>
+      <div>
+        <Link style={padding} to="/">home</Link>
+        <Link style={padding} to="/notes">notes</Link>
+        <Link style={padding} to="/persons">persons</Link>
+      </div>
 
-      <h2>persons</h2>
-      <form onSubmit={handlePersonSubmit}>
-        name <input {...name} /> <br/>
-        number <input {...number} />
-        <button>create</button>
-      </form>
-      {persons.map(n => <p key={n.id}>{n.name} {n.number}</p>)}
-    </div>
+
+
+
+      <Switch>
+        <Route path="/anecdotes/:id">
+
+        </Route>
+        <Route path="/notes">
+          <h2>notes</h2>
+          <form onSubmit={handleNoteSubmit}>
+            <Input {...content} />
+            <Button>create</Button>
+          </form>
+          {notes.map(n => <p key={n.id}>{n.content}</p>)}
+
+        </Route>
+        <Route path="/persons">
+          <h2>persons</h2>
+          <form onSubmit={handlePersonSubmit}>
+            name <input {...name} /> <br/>
+            number <Input {...number} />
+            <Button primary=''>create</Button>
+          </form>
+          {persons.map(n => <p key={n.id}>{n.name} {n.number}</p>)}
+
+        </Route>
+        <Route path="/">
+          <h2>notes</h2>
+            {notes.map(n => <p key={n.id}>{n.content}</p>)}
+          <h2>persons</h2>
+            {persons.map(n => <p key={n.id}>{n.name} {n.number}</p>)}
+        </Route>
+      </Switch>
+      </Router>
+    </Page>
   )
 }
 
