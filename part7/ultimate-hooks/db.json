@@ -7,54 +7,6 @@
     {
       "content": "paras feature ikinä <3",
       "id": 2
-    },
-    {
-      "content": "sdfds",
-      "id": 3
-    },
-    {
-      "content": "qw",
-      "id": 4
-    },
-    {
-      "content": "v",
-      "id": 5
-    },
-    {
-      "content": "adsa",
-      "id": 6
-    },
-    {
-      "content": "cacsa",
-      "id": 7
-    },
-    {
-      "content": "asdsadsa",
-      "id": 8
-    },
-    {
-      "content": "asda111",
-      "id": 9
-    },
-    {
-      "content": "adasads",
-      "id": 10
-    },
-    {
-      "content": "423423",
-      "id": 11
-    },
-    {
-      "content": "sda",
-      "id": 12
-    },
-    {
-      "content": "sadffasd",
-      "id": 13
-    },
-    {
-      "content": "asdaaazz",
-      "id": 14
     }
   ],
   "persons": [
@@ -67,31 +19,6 @@
       "name": "carlos",
       "number": "2312321",
       "id": 2
-    },
-    {
-      "name": "dasd",
-      "number": "4324",
-      "id": 3
-    },
-    {
-      "name": "carlos",
-      "number": "12321-2132",
-      "id": 4
-    },
-    {
-      "name": "dede",
-      "number": "43234",
-      "id": 5
-    },
-    {
-      "name": "asdda",
-      "number": "32321",
-      "id": 6
-    },
-    {
-      "name": "wewe",
-      "number": "23123",
-      "id": 7
     }
   ]
 }

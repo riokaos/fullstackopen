@@ -27,6 +27,7 @@ const useField = (type) => {
   }
 }
 
+
 const useResource = (baseUrl) => {
   const [resources, setResources] = useState([])
 
@@ -109,11 +110,14 @@ const App = () => {
   return (
     <Page>
       <Router>
-      <div>
-        <Link style={padding} to="/">home</Link>
-        <Link style={padding} to="/notes">notes</Link>
-        <Link style={padding} to="/persons">persons</Link>
-      </div>
+        <Navigation>
+          <div>
+            <Link style={padding} to="/">home</Link>
+            <Link style={padding} to="/notes">notes</Link>
+            <Link style={padding} to="/persons">persons</Link>
+            <Link style={padding} to="/both">Notes & Persons</Link>
+          </div>
+        </Navigation>
 
 
 
@@ -141,14 +145,56 @@ const App = () => {
           {persons.map(n => <p key={n.id}>{n.name} {n.number}</p>)}
 
         </Route>
+        <Route path="/both">
+        <table border="2" border-collapse="collapse">
+          <tbody>
+            <tr>
+              <th>
+                <h2>notes</h2>
+              </th>
+              <th>
+                <h2>persons</h2>
+              </th>
+            </tr>
+            <tr>
+              <td valign="top">
+                <form onSubmit={handleNoteSubmit}>
+                  <Input {...content} />
+                  <Button>create</Button>
+                </form>
+              </td>
+              <td valign="top">
+                <form onSubmit={handlePersonSubmit}>
+                  name <input {...name} /> <br/>
+                  number <Input {...number} />
+                  <Button primary=''>create</Button>
+                </form>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top">
+                {notes.map(n => <p key={n.id}>{n.content}</p>)}
+              </td>
+              <td valign="top">
+              {persons.map(n => <p key={n.id}>{n.name} {n.number}</p>)}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        </Route>
         <Route path="/">
           <h2>notes</h2>
             {notes.map(n => <p key={n.id}>{n.content}</p>)}
           <h2>persons</h2>
             {persons.map(n => <p key={n.id}>{n.name} {n.number}</p>)}
+
         </Route>
       </Switch>
+
       </Router>
+      <Footer>
+        <em>Note app, Department of Computer Science 2020</em>
+      </Footer>
     </Page>
   )
 }
