@@ -7,6 +7,19 @@ import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import { createStore } from 'redux'
+import  notificationReducer  from './reducers/notiReducer'
+
+
+// const notificationReducer = (state = 0, action) => {
+//   // ...
+// }
+const store = createStore(notificationReducer)
+
+// console.log("notireduce:", notificationReducer);
+console.log("store1:", store.getState())
+store.dispatch({type: 'SET_NOTIFICATION', data:'hello state'})
+console.log("store2:", store.getState())
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -52,7 +65,8 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-      setNotiMessage(`Welcome again ${user.username} `)
+      store.dispatch({type: 'SET_NOTIFICATION', data:`Welcome again ${user.username} `})
+      // setNotiMessage(`Welcome again ${user.username} `)
     } catch (exception) {
       setErrorMessage('Wrong credentials')
       setTimeout(() => {
@@ -94,9 +108,11 @@ const App = () => {
       .then(returnedBlog => {
         // console.log(response)
         setBlogs(blogs.concat(returnedBlog))
-        setNotiMessage(
-          `Blog '${returnedBlog.title}' added`
-        )
+        store.dispatch({type: 'SET_NOTIFICATION', data:`Blog '${returnedBlog.title}' added`})
+
+        // setNotiMessage(
+        //   `Blog '${returnedBlog.title}' added`
+        // )
         setTimeout(() => {
           setNotiMessage(null)
         }, 5000)
