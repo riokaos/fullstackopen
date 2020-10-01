@@ -1,25 +1,37 @@
 // import noteReducer from './noteReducer'
-import  notificationReducer  from './notiReducer'
 import deepFreeze from 'deep-freeze'
+import  notificationReducer  from './notiReducer'
+
 
 describe('notificationReducer', () => {
-  test('returns new state with action NEW_NOTIFICATION', () => {
+  test.only('returns new state with action SET_NOTIFICATION', () => {
     const state = []
     const action = {
       type: 'SET_NOTIFICATION',
-      data:  'the app state is in redux store'
+      data: "hello notification"
     }
 
     deepFreeze(state)
     const newState = notificationReducer(state, action)
 
-    console.log("newstate", newState);
+    // expect(newState.length).toBe(1)
+    expect(newState).toContainEqual(action.data)
+    expect(newState).toContainEqual('hello notification')
+  })
 
-    expect(newState).toContainEqual({
-      data:  'the app state is in redux store'
-    })
+  test('returns new state with action CLEAR_NOTIFICATION', () => {
+    const state = {
+      data: "hello notification"
+    }
+    const action = {
+      type: 'CLEAR_NOTIFICATION'
+    }
 
-    // expect(newState).toHaveLength(1)
+    deepFreeze(state)
+    const newState = notificationReducer(state, action)
+
+    // expect(newState.length).toBe(1)
     // expect(newState).toContainEqual(action.data)
+    expect(newState).toContainEqual('')
   })
 })

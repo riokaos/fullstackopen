@@ -4,12 +4,15 @@ const notificationReducer = (state = notificationAtStart, action) => {
   console.log('ACTION: ', action)
   switch (action.type) {
     case 'SET_NOTIFICATION':
+      // return state.concat(action.data)
       return action.data
     case 'CLEAR_NOTIFICATION':
       return {
         ...state,
-        data: ""
+        data: ''
+
       }
+      console.log('state: ', state)
     default:
       return state
   }

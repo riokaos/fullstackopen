@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import ReactDOM from 'react-dom'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import ErrorNotification from './components/ErrorNotification'
@@ -9,17 +10,21 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import { createStore } from 'redux'
 import  notificationReducer  from './reducers/notiReducer'
+import { composeWithDevTools } from 'redux-devtools-extension'
 
 
 // const notificationReducer = (state = 0, action) => {
 //   // ...
 // }
-const store = createStore(notificationReducer)
+
+const store = createStore(notificationReducer, composeWithDevTools())
+// const store = createStore(notificationReducer)
 
 // console.log("notireduce:", notificationReducer);
-console.log("store1:", store.getState())
-store.dispatch({type: 'SET_NOTIFICATION', data:'hello state'})
-console.log("store2:", store.getState())
+
+// store.dispatch({type: 'SET_NOTIFICATION', data:'Hello state'})
+
+
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -29,6 +34,8 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
+  const notiList = store.getState()
+  console.log("noti list::",notiList);
 
   useEffect(() => {
     blogService.getAll().then(blogs => {
@@ -65,8 +72,13 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-      store.dispatch({type: 'SET_NOTIFICATION', data:`Welcome again ${user.username} `})
       // setNotiMessage(`Welcome again ${user.username} `)
+      store.dispatch({type: 'SET_NOTIFICATION', data:`Welcome again ${user.username} `})
+      setTimeout(() => {
+        // setNotiMessage(null)
+        store.dispatch({type: 'CLEAR_NOTIFICATION'})
+
+      }, 5000)
     } catch (exception) {
       setErrorMessage('Wrong credentials')
       setTimeout(() => {
@@ -108,11 +120,10 @@ const App = () => {
       .then(returnedBlog => {
         // console.log(response)
         setBlogs(blogs.concat(returnedBlog))
+        setNotiMessage(
+          `Blog '${returnedBlog.title}' added`
+        )
         store.dispatch({type: 'SET_NOTIFICATION', data:`Blog '${returnedBlog.title}' added`})
-
-        // setNotiMessage(
-        //   `Blog '${returnedBlog.title}' added`
-        // )
         setTimeout(() => {
           setNotiMessage(null)
         }, 5000)
@@ -192,6 +203,8 @@ const App = () => {
   return (
     <div>
       <h1>blogs</h1>
+      {store.getState().length > 0 &&
+      store.getState()}
       <Notification message={notiMessage} />
       <ErrorNotification message={errorMessage} />
       {user === null ?
@@ -207,5 +220,12 @@ const App = () => {
     </div>
   )
 }
+
+const renderApp = () => {
+  ReactDOM.render(<App />, document.getElementById('root'))
+}
+
+renderApp()
+store.subscribe(renderApp)
 
 export default App
