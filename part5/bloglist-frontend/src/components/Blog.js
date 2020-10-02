@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+// import { like } from '../reducers/blogReducer'
 // import Togglable from './Togglable'
 
 const Blog = ({ blog, likeAdder, blogDel, loggedUser }) => {

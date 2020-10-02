@@ -1,10 +1,12 @@
 const notificationAtStart = ""
 
+
 const notificationReducer = (state = notificationAtStart, action) => {
   console.log('ACTION: ', action)
   switch (action.type) {
     case 'SET_NOTIFICATION':
       // return state.concat(action.data)
+      // return [...state, action.data]
       return action.data
     case 'CLEAR_NOTIFICATION':
       return {
@@ -17,6 +19,27 @@ const notificationReducer = (state = notificationAtStart, action) => {
       return state
   }
 }
+
+export const createNotification = (content) => {
+  return {
+    type: 'SET_NOTIFICATION',
+    data: content
+  }
+}
+// hasta aca lo que se usa
+
+
+export const initializeAnecdotes = () => {
+  return async dispatch => {
+    // const anecdotes = await anecdoteService.getAll()
+    // anecdotes.sort((a, b) => (b.votes > a.votes) ? 1 : -1)
+    dispatch({
+      type: 'INIT_ANECDOTES',
+      data: '',
+    })
+  }
+}
+
 
 export const setNotification = (notification,secs) => {
   return async dispatch => {

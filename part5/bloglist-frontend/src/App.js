@@ -8,16 +8,19 @@ import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
-import { createStore } from 'redux'
-import  notificationReducer  from './reducers/notiReducer'
-import { composeWithDevTools } from 'redux-devtools-extension'
+// import { createStore } from 'redux'
+import  {setNotification, clearNotification, initialState, createNotification}  from './reducers/notiReducer'
+import  {initializeBlogs, newBlog, like, removeBlog}  from './reducers/blogReducer'
+
+// import { composeWithDevTools } from 'redux-devtools-extension'
+import { useSelector, useDispatch } from 'react-redux'
 
 
 // const notificationReducer = (state = 0, action) => {
 //   // ...
 // }
 
-const store = createStore(notificationReducer, composeWithDevTools())
+// const store = createStore(notificationReducer, composeWithDevTools())
 // const store = createStore(notificationReducer)
 
 // console.log("notireduce:", notificationReducer);
@@ -27,24 +30,45 @@ const store = createStore(notificationReducer, composeWithDevTools())
 
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+
+  const dispatch = useDispatch()
+  // useEffect(() => {
+  //    dispatch(initializeBlogs())
+  // }, [dispatch])
+  useEffect(() => {
+    console.log("useeffect ran");
+    blogService
+      .getAll().then(blogs => dispatch(initializeBlogs(blogs)))
+  }, [dispatch]) //dispatch to avoid lint error
+
+  // const dispatch = useDispatch()
+  const notiList = useSelector(state => state.notification)
+  // const blogs = useSelector(state => state.blogs)
+
+  const blogs = useSelector(({blogs}) => {
+      blogs.sort((a, b) => (b.likes > a.likes) ? 1 : -1)
+      console.log("selector ran")
+    return blogs
+  })
+
+  // const [blogs, setBlogs] = useState([])
   const [errorMessage, setErrorMessage] = useState('')
   const [notiMessage, setNotiMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
-  const notiList = store.getState()
-  console.log("noti list::",notiList);
+  // const notiList = getState()
+  // console.log("noti list::",notiList);
 
-  useEffect(() => {
-    blogService.getAll().then(blogs => {
-      console.log('in blogs:',blogs)
-      blogs.sort((a, b) => (b.likes > a.likes) ? 1 : -1)
-      console.log('in blogs sorted:',blogs)
-      setBlogs( blogs )
-    })
-  }, [])
+  // useEffect(() => {
+  //   blogService.getAll().then(blogs => {
+  //     console.log('in blogs:',blogs)
+  //     blogs.sort((a, b) => (b.likes > a.likes) ? 1 : -1)
+  //     console.log('in blogs sorted:',blogs)
+  //     setBlogs( blogs )
+  //   })
+  // }, [])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -73,10 +97,12 @@ const App = () => {
       setUsername('')
       setPassword('')
       // setNotiMessage(`Welcome again ${user.username} `)
-      store.dispatch({type: 'SET_NOTIFICATION', data:`Welcome again ${user.username} `})
+      // store.dispatch({type: 'SET_NOTIFICATION', data:`Welcome again ${user.username} `})
+      dispatch(createNotification(`Welcome again ${user.username} `))
       setTimeout(() => {
         // setNotiMessage(null)
-        store.dispatch({type: 'CLEAR_NOTIFICATION'})
+        // store.dispatch({type: 'CLEAR_NOTIFICATION'})
+        dispatch(clearNotification())
 
       }, 5000)
     } catch (exception) {
@@ -114,16 +140,19 @@ const App = () => {
 
   const addBlog = (blogObject) => {
     // event.preventDefault()
+    console.log("blogObject:", blogObject);
     blogFormRef.current.toggleVisibility()
     blogService
       .create(blogObject)
       .then(returnedBlog => {
         // console.log(response)
-        setBlogs(blogs.concat(returnedBlog))
-        setNotiMessage(
-          `Blog '${returnedBlog.title}' added`
-        )
-        store.dispatch({type: 'SET_NOTIFICATION', data:`Blog '${returnedBlog.title}' added`})
+        // setBlogs(blogs.concat(returnedBlog))
+        dispatch(newBlog(blogObject))
+        // setNotiMessage(
+        //   `Blog '${returnedBlog.title}' added`
+        // )
+        // store.dispatch({type: 'SET_NOTIFICATION', data:`Blog '${returnedBlog.title}' added`})
+        dispatch(createNotification(`Blog '${returnedBlog.title}' added`))
         setTimeout(() => {
           setNotiMessage(null)
         }, 5000)
@@ -154,7 +183,8 @@ const App = () => {
       .then(returnedBlog => {
         var byLikes = blogs.map(blog => blog.id !== id ? blog : returnedBlog).slice(0)
         byLikes.sort((a, b) => (b.likes > a.likes) ? 1 : -1)
-        setBlogs(byLikes)
+        dispatch(like(blog.id))
+        // setBlogs(byLikes)
       })
       .catch(error => {
         setErrorMessage(
@@ -164,7 +194,7 @@ const App = () => {
           setErrorMessage(null)
         }, 5000)
         //remove an allready deleted note from the state
-        setBlogs(blogs.filter(n => n.id !== id))
+        // setBlogs(blogs.filter(n => n.id !== id))
       })
   }
 
@@ -177,7 +207,10 @@ const App = () => {
         .deleteb(id)
         .then(() => {
           // const toAdd = blogs.map(blog => blog.id !== id ? blog : returnedBlog.data);
-          setBlogs(restBlogs)
+          // setBlogs(restBlogs)
+          dispatch(removeBlog(blogD.id))
+          console.log("restblogs:",restBlogs);
+          const a = "2" //para que no marque error
           // setNewName('')
         })
         .catch(error => {
@@ -185,7 +218,8 @@ const App = () => {
             `the note '${blogD.title}' was already deleted from server : ${error}`
           )
           //remove an allready deleted note from the state
-          setBlogs(blogs.filter(n => n.id !== id))
+          // setBlogs(blogs.filter(n => n.id !== id))
+          const ab = "2" //para que no marque error
         })
     }
   }
@@ -203,9 +237,9 @@ const App = () => {
   return (
     <div>
       <h1>blogs</h1>
-      {store.getState().length > 0 &&
-      store.getState()}
-      <Notification message={notiMessage} />
+      {notiList.length > 0 &&
+      <Notification />}
+
       <ErrorNotification message={errorMessage} />
       {user === null ?
         loginForm():
@@ -221,11 +255,11 @@ const App = () => {
   )
 }
 
-const renderApp = () => {
-  ReactDOM.render(<App />, document.getElementById('root'))
-}
+// const renderApp = () => {
+//   ReactDOM.render(<App />, document.getElementById('root'))
+// }
 
-renderApp()
-store.subscribe(renderApp)
+// renderApp()
+// subscribe(renderApp)
 
 export default App
