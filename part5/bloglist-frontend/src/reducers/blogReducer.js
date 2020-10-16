@@ -7,15 +7,21 @@ const blogReducer = (state = [], action) => {
     case 'NEW_BLOG':
       // console.log("action::", action.data);
       // return state.concat(action.data)
+      // const changedBlogObject = {
+      //   ...action.data,
+      //   user: {"username": action.data.user.username, "id": action.data.user}
+      // }
+      // console.log("action data:", action.data);
+      // console.log("the change:", changedBlogObject);
       return [...state, action.data]
     case 'INIT_BLOGS':
       return action.data
     case 'REMOVE_BLOG':
       const id = action.data.id
-      return [...state.slice(0,id), ...state.slice(id+1)]
-      // return state.filter(({ id }) => id !== action.id);
-      // return state.slice(0, id).concat(state.slice(id + 1, state.length));
-      // return action.data
+      console.log("action.data.id:", action.data.id);
+      const restBlogs2 = state.filter(n => n.id !== id)
+      // console.log("remove_blog new state:", restBlogs2);
+      return state.filter(n => n.id !== id)
     case 'LIKE': {
       const id = action.data.id
       const blogToChange = state.find(n => n.id === id)
@@ -42,12 +48,25 @@ const blogReducer = (state = [], action) => {
 }
 
 // first version simple one
-export const initializeBlogs = (blogs) => {
-  return {
-    type: 'INIT_BLOGS',
-    data: blogs,
+// export const initializeBlogs = (blogs) => {
+//   return {
+//     type: 'INIT_BLOGS',
+//     data: blogs,
+//   }
+// }
+
+export const initializeBlogs = () => {
+  return async dispatch => {
+    const blogs = await blogService.getAll()
+    dispatch({
+      type: 'INIT_BLOGS',
+      data: blogs,
+    })
   }
 }
+
+//async version
+
 
 export const like = (id) => {
   return {
@@ -62,6 +81,7 @@ export const removeBlog = (id) => {
     data: { id }
   }
 }
+
 
 // export const initializeBlogs = () => {
 //   return async dispatch => {
@@ -81,6 +101,17 @@ export const newBlog = (content) => {
     data: content
   }
 }
+
+//async version
+// export const createNote = content => {
+//   return async dispatch => {
+//     const newNote = await noteService.createNew(content)
+//     dispatch({
+//       type: 'NEW_NOTE',
+//       data: newNote,
+//     })
+//   }
+// }
 
 
 

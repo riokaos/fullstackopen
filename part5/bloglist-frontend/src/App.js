@@ -16,30 +16,22 @@ import  {initializeBlogs, newBlog, like, removeBlog}  from './reducers/blogReduc
 import { useSelector, useDispatch } from 'react-redux'
 
 
-// const notificationReducer = (state = 0, action) => {
-//   // ...
-// }
-
-// const store = createStore(notificationReducer, composeWithDevTools())
-// const store = createStore(notificationReducer)
-
-// console.log("notireduce:", notificationReducer);
-
-// store.dispatch({type: 'SET_NOTIFICATION', data:'Hello state'})
-
-
-
 const App = () => {
 
   const dispatch = useDispatch()
   // useEffect(() => {
   //    dispatch(initializeBlogs())
   // }, [dispatch])
+
+  // useEffect(() => {
+  //   console.log("useeffect ran");
+  //   blogService
+  //     .getAll().then(blogs => dispatch(initializeBlogs(blogs)))
+  // }, [dispatch]) //dispatch to avoid lint error
+
   useEffect(() => {
-    console.log("useeffect ran");
-    blogService
-      .getAll().then(blogs => dispatch(initializeBlogs(blogs)))
-  }, [dispatch]) //dispatch to avoid lint error
+    dispatch(initializeBlogs())
+  },[dispatch])
 
   // const dispatch = useDispatch()
   const notiList = useSelector(state => state.notification)
@@ -47,13 +39,13 @@ const App = () => {
 
   const blogs = useSelector(({blogs}) => {
       blogs.sort((a, b) => (b.likes > a.likes) ? 1 : -1)
-      console.log("selector ran")
+      // console.log("selector ran")
     return blogs
   })
 
   // const [blogs, setBlogs] = useState([])
   const [errorMessage, setErrorMessage] = useState('')
-  const [notiMessage, setNotiMessage] = useState(null)
+  // const [notiMessage, setNotiMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -77,6 +69,7 @@ const App = () => {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
       // console.log("user effect:",user);
+      console.log("user:", user);
       blogService.setToken(user.token)
     }
   }, [])
@@ -147,14 +140,21 @@ const App = () => {
       .then(returnedBlog => {
         // console.log(response)
         // setBlogs(blogs.concat(returnedBlog))
-        dispatch(newBlog(blogObject))
+
+        const changedBlogObject = {
+          ...returnedBlog,
+          user: {"username": user.username, "id": returnedBlog.user}
+        }
+        // console.log("returned object:", returnedBlog);
+        // console.log("new object with user2:", changedBlogObject);
+        dispatch(newBlog(changedBlogObject))
         // setNotiMessage(
         //   `Blog '${returnedBlog.title}' added`
         // )
         // store.dispatch({type: 'SET_NOTIFICATION', data:`Blog '${returnedBlog.title}' added`})
         dispatch(createNotification(`Blog '${returnedBlog.title}' added`))
         setTimeout(() => {
-          setNotiMessage(null)
+          // setNotiMessage(null)
         }, 5000)
       })
       .catch(error => {
@@ -201,6 +201,7 @@ const App = () => {
   const deleteBlogMain = id => {
     const blogD = blogs.find(n => n.id === id)
     const restBlogs = blogs.filter(n => n.id !== id)
+    // console.log(obj);
     let message=`Are you sure you want to remove '${blogD.title}' ?`
     if (window.confirm(message)) {
       blogService
@@ -209,6 +210,7 @@ const App = () => {
           // const toAdd = blogs.map(blog => blog.id !== id ? blog : returnedBlog.data);
           // setBlogs(restBlogs)
           dispatch(removeBlog(blogD.id))
+          // dispatch({type: 'REMOVE_BLOG', data:blogD.id})
           console.log("restblogs:",restBlogs);
           const a = "2" //para que no marque error
           // setNewName('')

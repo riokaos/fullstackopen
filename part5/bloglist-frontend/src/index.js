@@ -8,7 +8,7 @@ import store from './store'
 
 // console.log("state from index::", store.getState())
 
-store.subscribe(() => console.log("state from index2::", store.getState()))
+store.subscribe(() => console.log("state from index::", store.getState()))
 // store.dispatch(createNotification('IMPORTANT'))
 // store.dispatch(newBlog('combineReducers forms one reducer from many simple reducers'))
 
