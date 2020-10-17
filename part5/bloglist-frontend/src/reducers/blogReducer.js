@@ -18,7 +18,7 @@ const blogReducer = (state = [], action) => {
       return action.data
     case 'REMOVE_BLOG':
       const id = action.data.id
-      console.log("action.data.id:", action.data.id);
+      console.log('action.data.id:', action.data.id)
       const restBlogs2 = state.filter(n => n.id !== id)
       // console.log("remove_blog new state:", restBlogs2);
       return state.filter(n => n.id !== id)

@@ -1,4 +1,4 @@
-const notificationAtStart = ""
+const notificationAtStart = ''
 
 
 const notificationReducer = (state = notificationAtStart, action) => {

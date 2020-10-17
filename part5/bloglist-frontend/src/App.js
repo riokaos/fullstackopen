@@ -9,8 +9,10 @@ import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 // import { createStore } from 'redux'
-import  {setNotification, clearNotification, initialState, createNotification}  from './reducers/notiReducer'
-import  {initializeBlogs, newBlog, like, removeBlog}  from './reducers/blogReducer'
+import  { setNotification, clearNotification, initialState, createNotification }  from './reducers/notiReducer'
+import  { initializeBlogs, newBlog, like, removeBlog }  from './reducers/blogReducer'
+import  { loginUser, logoutUser }  from './reducers/loginReducer'
+
 
 // import { composeWithDevTools } from 'redux-devtools-extension'
 import { useSelector, useDispatch } from 'react-redux'
@@ -19,57 +21,40 @@ import { useSelector, useDispatch } from 'react-redux'
 const App = () => {
 
   const dispatch = useDispatch()
-  // useEffect(() => {
-  //    dispatch(initializeBlogs())
-  // }, [dispatch])
-
-  // useEffect(() => {
-  //   console.log("useeffect ran");
-  //   blogService
-  //     .getAll().then(blogs => dispatch(initializeBlogs(blogs)))
-  // }, [dispatch]) //dispatch to avoid lint error
 
   useEffect(() => {
     dispatch(initializeBlogs())
   },[dispatch])
 
-  // const dispatch = useDispatch()
   const notiList = useSelector(state => state.notification)
-  // const blogs = useSelector(state => state.blogs)
 
-  const blogs = useSelector(({blogs}) => {
-      blogs.sort((a, b) => (b.likes > a.likes) ? 1 : -1)
-      // console.log("selector ran")
+  const blogs = useSelector(({ blogs }) => {
+    blogs.sort((a, b) => (b.likes > a.likes) ? 1 : -1)
+    // console.log("selector ran")
     return blogs
   })
+  // console.log("state::",useSelector(state => state.login));
+  const user = useSelector(state => state.login)
 
-  // const [blogs, setBlogs] = useState([])
   const [errorMessage, setErrorMessage] = useState('')
   // const [notiMessage, setNotiMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+  // const [user, setUser] = useState(null)
 
-  // const notiList = getState()
-  // console.log("noti list::",notiList);
-
-  // useEffect(() => {
-  //   blogService.getAll().then(blogs => {
-  //     console.log('in blogs:',blogs)
-  //     blogs.sort((a, b) => (b.likes > a.likes) ? 1 : -1)
-  //     console.log('in blogs sorted:',blogs)
-  //     setBlogs( blogs )
-  //   })
-  // }, [])
+  console.log('user outside:', (user))
+  console.log('user outside type:', typeof(user))
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
-    // console.log("logger User:",JSON.parse(loggedUserJSON));
+    console.log('logger User:',JSON.parse(loggedUserJSON))
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      // setUser(user)
+      dispatch(loginUser(user))
       // console.log("user effect:",user);
-      console.log("user:", user);
+      console.log('enters logged')
+      console.log('user in useEffect:',(user))
       blogService.setToken(user.token)
     }
   }, [])
@@ -84,9 +69,17 @@ const App = () => {
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
       )
+      // console.log("token 1:", user.token);
 
       blogService.setToken(user.token)
-      setUser(user)
+      // setUser(user)
+      console.log('user in handlelogin:',(user))
+      dispatch(loginUser(user))
+      // dispatch({
+      //   type: 'LOGIN_USER',
+      //   data:  user ,
+      // });
+      console.log('user 2:', user)
       setUsername('')
       setPassword('')
       // setNotiMessage(`Welcome again ${user.username} `)
@@ -98,8 +91,9 @@ const App = () => {
         dispatch(clearNotification())
 
       }, 5000)
-    } catch (exception) {
+    } catch (error) {
       setErrorMessage('Wrong credentials')
+      console.log('error:', error)
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -127,13 +121,17 @@ const App = () => {
 
   const handleLogOut = () => {
     // console.log(event.target.value)
-    setUser(null)
+    // setUser(null)
+    console.log('log out user::', user)
+    dispatch(logoutUser(null))
     window.localStorage.clear()
   }
 
+  // const user = useSelector(state => state.login)
+  // console.log("users::", user);
   const addBlog = (blogObject) => {
     // event.preventDefault()
-    console.log("blogObject:", blogObject);
+    console.log('blogObject:', blogObject)
     blogFormRef.current.toggleVisibility()
     blogService
       .create(blogObject)
@@ -143,7 +141,7 @@ const App = () => {
 
         const changedBlogObject = {
           ...returnedBlog,
-          user: {"username": user.username, "id": returnedBlog.user}
+          user: { 'username': user.username, 'id': returnedBlog.user }
         }
         // console.log("returned object:", returnedBlog);
         // console.log("new object with user2:", changedBlogObject);
@@ -210,9 +208,8 @@ const App = () => {
           // const toAdd = blogs.map(blog => blog.id !== id ? blog : returnedBlog.data);
           // setBlogs(restBlogs)
           dispatch(removeBlog(blogD.id))
-          // dispatch({type: 'REMOVE_BLOG', data:blogD.id})
-          console.log("restblogs:",restBlogs);
-          const a = "2" //para que no marque error
+          console.log('restblogs:',restBlogs)
+
           // setNewName('')
         })
         .catch(error => {
@@ -221,7 +218,6 @@ const App = () => {
           )
           //remove an allready deleted note from the state
           // setBlogs(blogs.filter(n => n.id !== id))
-          const ab = "2" //para que no marque error
         })
     }
   }
@@ -257,11 +253,5 @@ const App = () => {
   )
 }
 
-// const renderApp = () => {
-//   ReactDOM.render(<App />, document.getElementById('root'))
-// }
-
-// renderApp()
-// subscribe(renderApp)
 
 export default App
