@@ -6,16 +6,38 @@ import ErrorNotification from './components/ErrorNotification'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
+import UserList from './components/UserList'
+import UserDetail from './components/UserDetail'
+import BlogDetail from './components/BlogDetail'
 import blogService from './services/blogs'
 import loginService from './services/login'
 // import { createStore } from 'redux'
-import  { setNotification, clearNotification, initialState, createNotification }  from './reducers/notiReducer'
+import  { clearNotification, createNotification }  from './reducers/notiReducer'
 import  { initializeBlogs, newBlog, like, removeBlog }  from './reducers/blogReducer'
 import  { loginUser, logoutUser }  from './reducers/loginReducer'
+import  { initializeUsers }  from './reducers/userReducer'
 
 
+import {
+  BrowserRouter as Router,
+  Switch, Route, Link, useParams, useRouteMatch, Redirect, useHistory
+} from 'react-router-dom'
 // import { composeWithDevTools } from 'redux-devtools-extension'
 import { useSelector, useDispatch } from 'react-redux'
+
+
+const Menu = () => {
+  const padding = {
+    paddingRight: 5
+  }
+  return (
+    <div>
+      <Link style={padding} to="/">home</Link>
+      <Link style={padding} to="/users">users</Link>
+      <Link style={padding} to="/blogs">blogs</Link>
+    </div>
+  )
+}
 
 
 const App = () => {
@@ -24,6 +46,7 @@ const App = () => {
 
   useEffect(() => {
     dispatch(initializeBlogs())
+    dispatch(initializeUsers())
   },[dispatch])
 
   const notiList = useSelector(state => state.notification)
@@ -36,25 +59,24 @@ const App = () => {
   // console.log("state::",useSelector(state => state.login));
   const user = useSelector(state => state.login)
 
+  const users = useSelector(state => state.users)
+
   const [errorMessage, setErrorMessage] = useState('')
   // const [notiMessage, setNotiMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   // const [user, setUser] = useState(null)
 
-  console.log('user outside:', (user))
-  console.log('user outside type:', typeof(user))
+  // console.log('user outside:', (user))
+  // console.log('user outside type:', typeof(user))
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
-    console.log('logger User:',JSON.parse(loggedUserJSON))
+    // console.log('logger User:',JSON.parse(loggedUserJSON))
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       // setUser(user)
       dispatch(loginUser(user))
-      // console.log("user effect:",user);
-      console.log('enters logged')
-      console.log('user in useEffect:',(user))
       blogService.setToken(user.token)
     }
   }, [])
@@ -73,13 +95,13 @@ const App = () => {
 
       blogService.setToken(user.token)
       // setUser(user)
-      console.log('user in handlelogin:',(user))
+      // console.log('user in handlelogin:',(user))
       dispatch(loginUser(user))
       // dispatch({
       //   type: 'LOGIN_USER',
       //   data:  user ,
       // });
-      console.log('user 2:', user)
+      // console.log('user 2:', user)
       setUsername('')
       setPassword('')
       // setNotiMessage(`Welcome again ${user.username} `)
@@ -122,7 +144,7 @@ const App = () => {
   const handleLogOut = () => {
     // console.log(event.target.value)
     // setUser(null)
-    console.log('log out user::', user)
+    // console.log('log out user::', user)
     dispatch(logoutUser(null))
     window.localStorage.clear()
   }
@@ -131,7 +153,7 @@ const App = () => {
   // console.log("users::", user);
   const addBlog = (blogObject) => {
     // event.preventDefault()
-    console.log('blogObject:', blogObject)
+    // console.log('blogObject:', blogObject)
     blogFormRef.current.toggleVisibility()
     blogService
       .create(blogObject)
@@ -174,8 +196,8 @@ const App = () => {
     // create a new object that is an exact copy but with the important property
     const newLikes = blog.likes ? blog.likes + 1 : 1
     const changedBlog = { ...blog, likes: newLikes }
-    console.log('importance change changednote:',changedBlog)
-    console.log('effect')
+    // console.log('importance change changednote:',changedBlog)
+    // console.log('effect')
     blogService
       .update(id, changedBlog)
       .then(returnedBlog => {
@@ -208,7 +230,7 @@ const App = () => {
           // const toAdd = blogs.map(blog => blog.id !== id ? blog : returnedBlog.data);
           // setBlogs(restBlogs)
           dispatch(removeBlog(blogD.id))
-          console.log('restblogs:',restBlogs)
+          // console.log('restblogs:',restBlogs)
 
           // setNewName('')
         })
@@ -232,23 +254,39 @@ const App = () => {
     />
   )
 
+
   return (
     <div>
-      <h1>blogs</h1>
-      {notiList.length > 0 &&
-      <Notification />}
+      <Router>
+        <Menu/>
+        {notiList.length > 0 &&
+        <Notification />}
 
-      <ErrorNotification message={errorMessage} />
-      {user === null ?
-        loginForm():
-        <div>
-          <p>{user.name} logged in <button id="log-out" onClick={() => handleLogOut()}>
-          Log out
-          </button></p>
-          {blogForm()}
-        </div>
-      }
-      {rows()}
+        <ErrorNotification message={errorMessage} />
+        {user === null ?
+          loginForm():
+          <div>
+            <p>{user.name} logged in <button id="log-out" onClick={() => handleLogOut()}>
+            Log out
+            </button></p>
+            {blogForm()}
+          </div>
+        }
+        <Switch>
+          <Route path="/users/:id" component={UserDetail}/>
+          <Route path="/blogs/:id" component={BlogDetail}/>
+
+          <Route path="/users">
+            <h1>Users</h1>
+            <UserList users={users}/>
+          </Route>
+          <Route path="/">
+            <h1>blogs</h1>
+            {rows()}
+          </Route>
+        </Switch>
+      </Router>
+
     </div>
   )
 }

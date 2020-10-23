@@ -18,7 +18,7 @@ const blogReducer = (state = [], action) => {
       return action.data
     case 'REMOVE_BLOG':
       const id = action.data.id
-      console.log('action.data.id:', action.data.id)
+      // console.log('action.data.id:', action.data.id)
       const restBlogs2 = state.filter(n => n.id !== id)
       // console.log("remove_blog new state:", restBlogs2);
       return state.filter(n => n.id !== id)
@@ -33,7 +33,7 @@ const blogReducer = (state = [], action) => {
       // const changedNotification = {
       //   ...notificationToChange, 'Note added'
       // }
-      console.log("state::",state);
+      // console.log("state::",state);
       return (
          state.map(blog =>
           blog.id !== id ? blog : changedBlog
@@ -42,7 +42,7 @@ const blogReducer = (state = [], action) => {
       )
      }
     default:
-    console.log("default state");
+    // console.log("default state");
       return state
   }
 }
@@ -54,6 +54,13 @@ const blogReducer = (state = [], action) => {
 //     data: blogs,
 //   }
 // }
+
+export const newBlog = (content) => {
+  return {
+    type: 'NEW_BLOG',
+    data: content
+  }
+}
 
 export const initializeBlogs = () => {
   return async dispatch => {
@@ -95,12 +102,7 @@ export const removeBlog = (id) => {
 //   }
 // }
 
-export const newBlog = (content) => {
-  return {
-    type: 'NEW_BLOG',
-    data: content
-  }
-}
+
 
 //async version
 // export const createNote = content => {

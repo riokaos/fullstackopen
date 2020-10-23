@@ -7,7 +7,9 @@ const loginReducer = (state = null, action) => {
     case 'LOGIN_SUCCESS':
       // console.log("login user red:", action.data);
       // return {...state, login: action.data}
+      // return {...state, data: action.data}
       return action.data
+      // return [...state, action.data]
     case 'LOGOUT_USER':
     // return {
     //     ...state,

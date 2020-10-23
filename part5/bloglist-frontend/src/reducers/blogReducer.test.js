@@ -30,12 +30,12 @@ describe('noteReducer', () => {
 
 test('delete works REMOVE_BLOG', () => {
     const state = [{        title: 'Testing title',
-            author: 'Author testing',
-            url: 'www.test.com',
-            likes: 3,
-            user: {username:'loco', id:3},
-            id: 2
-          }]
+      author: 'Author testing',
+      url: 'www.test.com',
+      likes: 3,
+      user: {username:'loco', id:3},
+      id: 2
+    }]
     const action = {
       type: 'REMOVE_BLOG',
       data: {id: 2}

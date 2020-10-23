@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 // import { like } from '../reducers/blogReducer'
 // import Togglable from './Togglable'
+import { Link } from 'react-router-dom'
 
 const Blog = ({ blog, likeAdder, blogDel, loggedUser }) => {
   const blogStyle = {
@@ -33,7 +34,9 @@ const Blog = ({ blog, likeAdder, blogDel, loggedUser }) => {
 
   return (
     <div style={blogStyle} className='blog'>
-      <div style={hideWhenVisible} className='blogDefault'>{blog.title}<br/>{blog.author}
+      <div style={hideWhenVisible} className='blogDefault'>
+        <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+        <br/>{blog.author}
         <button onClick={toggleVisibility} id='show'>Show</button>
 
       </div>
