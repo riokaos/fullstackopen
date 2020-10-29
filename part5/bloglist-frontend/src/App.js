@@ -26,15 +26,30 @@ import {
 import { useSelector, useDispatch } from 'react-redux'
 
 
-const Menu = () => {
+
+const Menu = ({user, logForm, bgForm,hdLogout }) => {
   const padding = {
     paddingRight: 5
   }
+  const logoutButton = () => (
+    // {
+    <button id="log-out" className="button button1" onClick={hdLogout}>Log out</button>
+    // }
+  )
   return (
     <div>
       <Link style={padding} to="/">home</Link>
       <Link style={padding} to="/users">users</Link>
       <Link style={padding} to="/blogs">blogs</Link>
+      {user === null ?
+        logForm():
+        <span>
+          {user.name} logged in {<button id="log-out" onClick={hdLogout()}>
+          Log out
+          </button>}
+          {bgForm()}
+        </span>
+      }
     </div>
   )
 }
@@ -190,66 +205,10 @@ const App = () => {
       })
   }
 
-  const addLike = id => {
-    // find the note we want to modify and assign it to the note variable
-    const blog = blogs.find(n => n.id === id)
-    // create a new object that is an exact copy but with the important property
-    const newLikes = blog.likes ? blog.likes + 1 : 1
-    const changedBlog = { ...blog, likes: newLikes }
-    // console.log('importance change changednote:',changedBlog)
-    // console.log('effect')
-    blogService
-      .update(id, changedBlog)
-      .then(returnedBlog => {
-        var byLikes = blogs.map(blog => blog.id !== id ? blog : returnedBlog).slice(0)
-        byLikes.sort((a, b) => (b.likes > a.likes) ? 1 : -1)
-        dispatch(like(blog.id))
-        // setBlogs(byLikes)
-      })
-      .catch(error => {
-        setErrorMessage(
-          `Blog '${blog.title}'was already removed from server: ${error}`
-        )
-        setTimeout(() => {
-          setErrorMessage(null)
-        }, 5000)
-        //remove an allready deleted note from the state
-        // setBlogs(blogs.filter(n => n.id !== id))
-      })
-  }
-
-  const deleteBlogMain = id => {
-    const blogD = blogs.find(n => n.id === id)
-    const restBlogs = blogs.filter(n => n.id !== id)
-    // console.log(obj);
-    let message=`Are you sure you want to remove '${blogD.title}' ?`
-    if (window.confirm(message)) {
-      blogService
-        .deleteb(id)
-        .then(() => {
-          // const toAdd = blogs.map(blog => blog.id !== id ? blog : returnedBlog.data);
-          // setBlogs(restBlogs)
-          dispatch(removeBlog(blogD.id))
-          // console.log('restblogs:',restBlogs)
-
-          // setNewName('')
-        })
-        .catch(error => {
-          alert(
-            `the note '${blogD.title}' was already deleted from server : ${error}`
-          )
-          //remove an allready deleted note from the state
-          // setBlogs(blogs.filter(n => n.id !== id))
-        })
-    }
-  }
-
   const rows = () => blogs.map(blog =>
     <Blog
       key={blog.id}
       blog={blog}
-      likeAdder={() => addLike(blog.id)}
-      blogDel={() => deleteBlogMain(blog.id)}
       loggedUser={user === null  ? null : user.username}
     />
   )
@@ -258,20 +217,13 @@ const App = () => {
   return (
     <div>
       <Router>
-        <Menu/>
+        <Menu user={user} logForm={() => loginForm()}
+          bgForm={() => blogForm()}
+          hdLogout={() => handleLogOut}/>
         {notiList.length > 0 &&
         <Notification />}
 
         <ErrorNotification message={errorMessage} />
-        {user === null ?
-          loginForm():
-          <div>
-            <p>{user.name} logged in <button id="log-out" onClick={() => handleLogOut()}>
-            Log out
-            </button></p>
-            {blogForm()}
-          </div>
-        }
         <Switch>
           <Route path="/users/:id" component={UserDetail}/>
           <Route path="/blogs/:id" component={BlogDetail}/>

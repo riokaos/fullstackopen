@@ -14,7 +14,8 @@ const BlogDetail = (props) => {
   // })
 
   const blog = useSelector(({ blogs }) =>  blogs.find(n => n.id === (id)))
-
+  const loggedUser = useSelector(({ login }) => login)
+  // const user = useSelector(state => state.login)
   const addLike = id => {
     // find the note we want to modify and assign it to the note variable
     // const blog = blogs.find(n => n.id === id)
@@ -43,12 +44,49 @@ const BlogDetail = (props) => {
       })
   }
 
-  console.log("userD:", blog);
+  const deleteBlogMain = id => {
+    // const blogD = blogs.find(n => n.id === id)
+    // const restBlogs = blogs.filter(n => n.id !== id)
+    // console.log(obj);
+    let message=`Are you sure you want to remove '${blog.title}' ?`
+    if (window.confirm(message)) {
+      blogService
+        .deleteb(id)
+        .then(() => {
+          // const toAdd = blogs.map(blog => blog.id !== id ? blog : returnedBlog.data);
+          // setBlogs(restBlogs)
+          dispatch(removeBlog(blog.id))
+          // console.log('restblogs:',restBlogs)
+
+          // setNewName('')
+        })
+        .catch(error => {
+          alert(
+            `the note '${blog.title}' was already deleted from server : ${error}`
+          )
+          //remove an allready deleted note from the state
+          // setBlogs(blogs.filter(n => n.id !== id))
+        })
+    }
+  }
+
+  const deleteButton = () => (
+    // {
+    <button id="delete" className="button button1" onClick={() => deleteBlogMain(blog.id)}>delete</button>
+    // }
+  )
+
+  console.log('userD:', blog);
   if (!blog) {    return null  }
   return (
     <div>
-      <h2>{blog.title}</h2>
+      <h2>{blog.title}<br/>{blog.author}</h2>
+      {blog.author}{blog.url}
       <div>likes: {blog.likes} <button id='likes' onClick={() => addLike(blog.id)}>Like</button><br/></div>
+      {blog.user === undefined ? null
+        :
+        blog.user.username === loggedUser.username ? deleteButton(): null
+      }
     </div>
   )
 }
