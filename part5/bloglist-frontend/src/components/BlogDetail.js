@@ -1,17 +1,29 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import blogService from '../services/blogs'
-import  { initializeBlogs, newBlog, like, removeBlog }  from '../reducers/blogReducer'
+import  { initializeBlogs, newBlog, like, createComment, removeBlog }  from '../reducers/blogReducer'
+import CommentForm from './CommentForm'
 
+const Comments = ( { comments } ) => {
+  console.log('comments component:', comments)
+  return (
+    <div>
+      <h2>Comments</h2>
+      <ul>
+        {comments.map(comment =>
+          <li key={comment._id}>
+            {comment.content}
+          </li>
+        )}
+      </ul>
+    </div>
+  )
+}
 
 const BlogDetail = (props) => {
   const dispatch = useDispatch()
   const id = props.match.params.id
   console.log('id::',id)
-
-  // const userD = useSelector(({ users }) => {
-  //   return users.find(n => n.id === (id))
-  // })
 
   const blog = useSelector(({ blogs }) =>  blogs.find(n => n.id === (id)))
   const loggedUser = useSelector(({ login }) => login)
@@ -27,10 +39,7 @@ const BlogDetail = (props) => {
     blogService
       .update(id, changedBlog)
       .then(returnedBlog => {
-        // var byLikes = blogs.map(blog => blog.id !== id ? blog : returnedBlog).slice(0)
-        // byLikes.sort((a, b) => (b.likes > a.likes) ? 1 : -1)
         dispatch(like(blog.id))
-        // setBlogs(byLikes)
       })
       .catch(error => {
         // setErrorMessage(
@@ -45,9 +54,6 @@ const BlogDetail = (props) => {
   }
 
   const deleteBlogMain = id => {
-    // const blogD = blogs.find(n => n.id === id)
-    // const restBlogs = blogs.filter(n => n.id !== id)
-    // console.log(obj);
     let message=`Are you sure you want to remove '${blog.title}' ?`
     if (window.confirm(message)) {
       blogService
@@ -76,6 +82,16 @@ const BlogDetail = (props) => {
     // }
   )
 
+  const addComment = (id, commentObject) => {
+    // const newLikes = blog.likes ? blog.likes + 1 : 1
+    const changedBlog = { ...blog, comment: commentObject.content }
+    // console.log("new comment:", commentObject);
+    // console.log("changed object:", changedBlog);
+
+    dispatch(createComment(id, changedBlog))
+    // console.log("updated db");
+  }
+
   console.log('userD:', blog);
   if (!blog) {    return null  }
   return (
@@ -87,6 +103,10 @@ const BlogDetail = (props) => {
         :
         blog.user.username === loggedUser.username ? deleteButton(): null
       }
+      {blog.comments.length > 0 &&
+      <Comments comments={blog.comments}/>
+      }
+      <CommentForm createComment={addComment} blog={blog} />
     </div>
   )
 }
