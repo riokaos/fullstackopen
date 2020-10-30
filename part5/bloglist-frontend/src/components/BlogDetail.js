@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import blogService from '../services/blogs'
 import  { initializeBlogs, newBlog, like, createComment, removeBlog }  from '../reducers/blogReducer'
 import CommentForm from './CommentForm'
+import { useHistory } from "react-router-dom";
 
 const Comments = ( { comments } ) => {
   console.log('comments component:', comments)
@@ -22,11 +23,19 @@ const Comments = ( { comments } ) => {
 
 const BlogDetail = (props) => {
   const dispatch = useDispatch()
+  const history = useHistory()
   const id = props.match.params.id
   console.log('id::',id)
 
   const blog = useSelector(({ blogs }) =>  blogs.find(n => n.id === (id)))
   const loggedUser = useSelector(({ login }) => login)
+  // console.log('logged user:',loggedUser);
+  // const result_eval = (loggedUser.username === null)
+  // var inputVal = loggedUser.username === null;
+  // console.log('eval logged user:',inputVal);
+  // console.log('logged user:',loggedUser.username);
+  // console.log('blog user:', blog.user.username);
+
   // const user = useSelector(state => state.login)
   const addLike = id => {
     // find the note we want to modify and assign it to the note variable
@@ -74,6 +83,7 @@ const BlogDetail = (props) => {
           // setBlogs(blogs.filter(n => n.id !== id))
         })
     }
+    history.push('/');
   }
 
   const deleteButton = () => (
@@ -92,7 +102,8 @@ const BlogDetail = (props) => {
     // console.log("updated db");
   }
 
-  console.log('userD:', blog);
+  // console.log('userD:', blog)
+  // console.log('blog user:', blog.user)
   if (!blog) {    return null  }
   return (
     <div>
@@ -101,7 +112,9 @@ const BlogDetail = (props) => {
       <div>likes: {blog.likes} <button id='likes' onClick={() => addLike(blog.id)}>Like</button><br/></div>
       {blog.user === undefined ? null
         :
-        blog.user.username === loggedUser.username ? deleteButton(): null
+        loggedUser === null ? null
+          :
+          blog.user.username === loggedUser.username ? deleteButton(): null
       }
       {blog.comments.length > 0 &&
       <Comments comments={blog.comments}/>
