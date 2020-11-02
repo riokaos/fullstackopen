@@ -16,6 +16,8 @@ import  { clearNotification, createNotification }  from './reducers/notiReducer'
 import  { initializeBlogs, newBlog, like, removeBlog }  from './reducers/blogReducer'
 import  { loginUser, logoutUser }  from './reducers/loginReducer'
 import  { initializeUsers }  from './reducers/userReducer'
+import { Container, Table, TableBody, TableCell, TableContainer, TableRow,
+  Paper, Button, AppBar, Toolbar  } from '@material-ui/core'
 
 
 import {
@@ -33,24 +35,50 @@ const Menu = ({user, logForm, bgForm,hdLogout }) => {
   }
   const logoutButton = () => (
     // {
-    <button id="log-out" className="button button1" onClick={hdLogout}>Log out</button>
+    <Button variant="outlined" color="" id="log-out" className="button button1" onClick={hdLogout}>
+      Log out
+    </Button>
     // }
   )
+  // return (
+  //   <div>
+  //     <Link style={padding} to="/">home</Link>
+  //     <Link style={padding} to="/users">users</Link>
+  //     <Link style={padding} to="/blogs">blogs</Link>
+  //     {user === null ?
+  //       logForm():
+  //       <span>
+  //         {user.name} logged in {<Button size="small" variant="outlined" color="primary" id="log-out" onClick={hdLogout()}>
+  //         Log out
+  //         </Button>}
+  //         {bgForm()}
+  //       </span>
+  //     }
+  //   </div>
+  // )
   return (
-    <div>
-      <Link style={padding} to="/">home</Link>
-      <Link style={padding} to="/users">users</Link>
-      <Link style={padding} to="/blogs">blogs</Link>
-      {user === null ?
-        logForm():
-        <span>
-          {user.name} logged in {<button id="log-out" onClick={hdLogout()}>
-          Log out
-          </button>}
-          {bgForm()}
-        </span>
-      }
-    </div>
+    <AppBar position="static">
+      <Toolbar>
+        <Button color="inherit" component={Link} to="/">
+         home
+        </Button>
+        <Button color="inherit" component={Link} to="/users">
+          users
+        </Button>
+        <Button color="inherit" component={Link} to="/blogs">
+           blogs
+        </Button>
+        {user === null ?
+          <span>not logged</span>:
+          <span>
+            {user.name} logged in {<Button size="small" variant="outlined" color="primary" id="log-out" onClick={hdLogout()}>
+            Log out
+            </Button>}
+
+          </span>
+        }
+      </Toolbar>
+    </AppBar>
   )
 }
 
@@ -213,33 +241,63 @@ const App = () => {
     />
   )
 
+  const BlogList = () => {
+    return(
+      <div>
+        <h2>Blogs</h2>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableBody>
+              {blogs.map(blog =>
+                <Blog
+                  key={blog.id}
+                  blog={blog}
+                  loggedUser={user === null  ? null : user.username}
+                />)}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </div>
+    )
+  }
+
 
   return (
-    <div>
-      <Router>
-        <Menu user={user} logForm={() => loginForm()}
-          bgForm={() => blogForm()}
-          hdLogout={() => handleLogOut}/>
-        {notiList.length > 0 &&
-        <Notification />}
+    <Container>
+      <div>
+        <Router>
+          <Menu user={user} logForm={() => loginForm()}
+            bgForm={() => blogForm()}
+            hdLogout={() => handleLogOut}/>
+          {notiList.length > 0 &&
+          <Notification />}
 
-        <ErrorNotification message={errorMessage} />
-        <Switch>
-          <Route path="/users/:id" component={UserDetail}/>
-          <Route path="/blogs/:id" component={BlogDetail}/>
+          <ErrorNotification message={errorMessage} />
+          {user === null ?
+        loginForm():
+        <div>
+          <p>{user.name} logged in <Button size="small" variant="outlined" color="primary" id="log-out" onClick={() => handleLogOut()}>
+          Log out
+          </Button></p>
+          {blogForm()}
+        </div>
+      }
+          <Switch>
+            <Route path="/users/:id" component={UserDetail}/>
+            <Route path="/blogs/:id" component={BlogDetail}/>
 
-          <Route path="/users">
-            <h1>Users</h1>
-            <UserList users={users}/>
-          </Route>
-          <Route path="/">
-            <h1>blogs</h1>
-            {rows()}
-          </Route>
-        </Switch>
-      </Router>
+            <Route path="/users">
+              <h1>Users</h1>
+              <UserList users={users}/>
+            </Route>
+            <Route path="/">
+              <BlogList/>
+            </Route>
+          </Switch>
+        </Router>
 
-    </div>
+      </div>
+    </Container>
   )
 }
 

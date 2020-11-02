@@ -3,14 +3,9 @@ import React, { useState } from 'react'
 // import Togglable from './Togglable'
 import { Link } from 'react-router-dom'
 
+import { TableCell, TableRow } from '@material-ui/core'
+
 const Blog = ({ blog, likeAdder, blogDel, loggedUser }) => {
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5
-  }
   const [visible, setVisible] = useState(false)
 
   const hideWhenVisible = { display: visible ? 'none' : '' }
@@ -33,11 +28,14 @@ const Blog = ({ blog, likeAdder, blogDel, loggedUser }) => {
   // console.log("visible:",visible);
 
   return (
-    <div style={blogStyle} className='blog'>
-      <div className='blogDefault'>
+    <TableRow key={blog.id}>
+      <TableCell>
         <Link to={`/blogs/${blog.id}`}>{blog.title} {blog.author}</Link>
-      </div>
-    </div>
+      </TableCell>
+      <TableCell>
+        {blog.author}
+      </TableCell>
+    </TableRow>
   )
 }
 

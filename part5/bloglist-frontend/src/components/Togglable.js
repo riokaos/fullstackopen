@@ -1,9 +1,9 @@
 import React, { useState, useImperativeHandle  } from 'react'
 import PropTypes from 'prop-types'
+import { TextField, Button } from '@material-ui/core'
 
 const Togglable = React.forwardRef((props, ref) => {
   const [visible, setVisible] = useState(props.startOpen)
-
   const hideWhenVisible = { display: visible ? 'none' : '' }
   const showWhenVisible = { display: visible ? '' : 'none' }
 
@@ -20,11 +20,15 @@ const Togglable = React.forwardRef((props, ref) => {
   return (
     <div>
       <div style={hideWhenVisible}>
-        <button onClick={toggleVisibility}>{props.buttonLabel}</button>
+        <Button variant="contained" color="primary" onClick={toggleVisibility}>
+          {props.buttonLabel}
+        </Button>
       </div>
       <div style={showWhenVisible}>
         {props.children}
-        <button onClick={toggleVisibility}>hide</button>
+        <Button  size="small" variant="outlined" color="primary" onClick={toggleVisibility}>
+          hide
+        </Button>
       </div>
     </div>
   )
