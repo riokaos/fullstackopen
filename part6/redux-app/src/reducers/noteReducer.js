@@ -1,4 +1,6 @@
 import noteService from '../services/notes'
+import notificationReducer , { setNotification } from './notificationReducer'
+
 const initialState = [
   {
     content: 'reducer defines how redux store works',
@@ -37,15 +39,18 @@ const noteReducer = (state = [], action) => {
 }
 
 
-export const createNote = content => {
+export const createNote = (content) => {
   return async dispatch => {
     const newNote = await noteService.createNew(content)
+    console.log("new_note:", newNote);
     dispatch({
       type: 'NEW_NOTE',
       data: newNote,
     })
+    dispatch(setNotification(`New anecdote '${content}' created `,5))
   }
 }
+
 
 export const initializeNotes = () => {
   return async dispatch => {

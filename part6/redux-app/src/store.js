@@ -4,12 +4,14 @@ import thunk from 'redux-thunk'
 import { composeWithDevTools } from 'redux-devtools-extension'
 
 import noteReducer from './reducers/noteReducer'
+import notificationReducer from './reducers/notificationReducer'
 import filterReducer from './reducers/filterReducer'
 
 
 const reducer = combineReducers({
   notes: noteReducer,
-  filter: filterReducer
+  filter: filterReducer,
+  notification: notificationReducer
 })
 
 const store = createStore(
