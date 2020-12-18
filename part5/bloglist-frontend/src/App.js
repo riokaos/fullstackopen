@@ -11,8 +11,7 @@ import UserDetail from './components/UserDetail'
 import BlogDetail from './components/BlogDetail'
 import blogService from './services/blogs'
 import loginService from './services/login'
-// import { createStore } from 'redux'
-import  { clearNotification, createNotification }  from './reducers/notiReducer'
+import  { setNotification }  from './reducers/notiReducer'
 import  { initializeBlogs, newBlog, like, removeBlog }  from './reducers/blogReducer'
 import  { loginUser, logoutUser }  from './reducers/loginReducer'
 import  { initializeUsers }  from './reducers/userReducer'
@@ -71,7 +70,7 @@ const Menu = ({user, logForm, bgForm,hdLogout }) => {
         {user === null ?
           <span>not logged</span>:
           <span>
-            {user.name} logged in {<Button size="small" variant="outlined" color="primary" id="log-out" onClick={hdLogout()}>
+            {user.name} logged in {<Button size="small" variant="contained" color="default" id="log-out" onClick={hdLogout()}>
             Log out
             </Button>}
 
@@ -105,20 +104,14 @@ const App = () => {
   const users = useSelector(state => state.users)
 
   const [errorMessage, setErrorMessage] = useState('')
-  // const [notiMessage, setNotiMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  // const [user, setUser] = useState(null)
 
-  // console.log('user outside:', (user))
-  // console.log('user outside type:', typeof(user))
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
-    // console.log('logger User:',JSON.parse(loggedUserJSON))
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      // setUser(user)
       dispatch(loginUser(user))
       blogService.setToken(user.token)
     }
@@ -134,28 +127,13 @@ const App = () => {
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
       )
-      // console.log("token 1:", user.token);
 
       blogService.setToken(user.token)
-      // setUser(user)
-      // console.log('user in handlelogin:',(user))
       dispatch(loginUser(user))
-      // dispatch({
-      //   type: 'LOGIN_USER',
-      //   data:  user ,
-      // });
-      // console.log('user 2:', user)
       setUsername('')
       setPassword('')
-      // setNotiMessage(`Welcome again ${user.username} `)
-      // store.dispatch({type: 'SET_NOTIFICATION', data:`Welcome again ${user.username} `})
-      dispatch(createNotification(`Welcome again ${user.username} `))
-      setTimeout(() => {
-        // setNotiMessage(null)
-        // store.dispatch({type: 'CLEAR_NOTIFICATION'})
-        dispatch(clearNotification())
 
-      }, 5000)
+      dispatch(setNotification(`Welcome again ${user.username} `,5))
     } catch (error) {
       setErrorMessage('Wrong credentials')
       console.log('error:', error)
@@ -185,40 +163,27 @@ const App = () => {
   )
 
   const handleLogOut = () => {
-    // console.log(event.target.value)
     // setUser(null)
-    // console.log('log out user::', user)
     dispatch(logoutUser(null))
+      dispatch(setNotification(`Log Out succesfull`,5))
     window.localStorage.clear()
   }
 
-  // const user = useSelector(state => state.login)
-  // console.log("users::", user);
+
   const addBlog = (blogObject) => {
-    // event.preventDefault()
-    // console.log('blogObject:', blogObject)
+
     blogFormRef.current.toggleVisibility()
+    console.log('blog object::', blogObject)
     blogService
       .create(blogObject)
       .then(returnedBlog => {
-        // console.log(response)
-        // setBlogs(blogs.concat(returnedBlog))
 
         const changedBlogObject = {
           ...returnedBlog,
           user: { 'username': user.username, 'id': returnedBlog.user }
         }
-        // console.log("returned object:", returnedBlog);
-        // console.log("new object with user2:", changedBlogObject);
         dispatch(newBlog(changedBlogObject))
-        // setNotiMessage(
-        //   `Blog '${returnedBlog.title}' added`
-        // )
-        // store.dispatch({type: 'SET_NOTIFICATION', data:`Blog '${returnedBlog.title}' added`})
-        dispatch(createNotification(`Blog '${returnedBlog.title}' added`))
-        setTimeout(() => {
-          // setNotiMessage(null)
-        }, 5000)
+        dispatch(setNotification(`Blog '${returnedBlog.title}' added`,5))
       })
       .catch(error => {
         let niceError = error.response.data.error
@@ -274,14 +239,14 @@ const App = () => {
 
           <ErrorNotification message={errorMessage} />
           {user === null ?
-        loginForm():
-        <div>
-          <p>{user.name} logged in <Button size="small" variant="outlined" color="primary" id="log-out" onClick={() => handleLogOut()}>
-          Log out
-          </Button></p>
-          {blogForm()}
-        </div>
-      }
+            loginForm():
+            <div>
+              <p>{user.name} logged in <Button size="small" variant="outlined" color="primary" id="log-out" onClick={() => handleLogOut()}>
+              Log out
+              </Button></p>
+              {blogForm()}
+            </div>
+          }
           <Switch>
             <Route path="/users/:id" component={UserDetail}/>
             <Route path="/blogs/:id" component={BlogDetail}/>

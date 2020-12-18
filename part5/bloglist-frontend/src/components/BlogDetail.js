@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import blogService from '../services/blogs'
 import  { initializeBlogs, newBlog, like, createComment, removeBlog }  from '../reducers/blogReducer'
 import CommentForm from './CommentForm'
+import  { setNotification }  from '../reducers/notiReducer'
 import { useHistory } from "react-router-dom";
 
 const Comments = ( { comments } ) => {
@@ -49,8 +50,12 @@ const BlogDetail = (props) => {
       .update(id, changedBlog)
       .then(returnedBlog => {
         dispatch(like(blog.id))
+        dispatch(setNotification(`Blog: '${blog.title}' liked`,5))
       })
       .catch(error => {
+        alert(
+          `the note '${blog.title}' was already deleted from server : ${error}`
+        )
         // setErrorMessage(
         //   `Blog '${blog.title}'was already removed from server: ${error}`
         // )
@@ -68,12 +73,8 @@ const BlogDetail = (props) => {
       blogService
         .deleteb(id)
         .then(() => {
-          // const toAdd = blogs.map(blog => blog.id !== id ? blog : returnedBlog.data);
-          // setBlogs(restBlogs)
           dispatch(removeBlog(blog.id))
-          // console.log('restblogs:',restBlogs)
-
-          // setNewName('')
+          dispatch(setNotification(`Blog: '${blog.title}' removed`,5))
         })
         .catch(error => {
           alert(
@@ -93,12 +94,9 @@ const BlogDetail = (props) => {
   )
 
   const addComment = (id, commentObject) => {
-    // const newLikes = blog.likes ? blog.likes + 1 : 1
     const changedBlog = { ...blog, comment: commentObject.content }
-    // console.log("new comment:", commentObject);
-    // console.log("changed object:", changedBlog);
-
     dispatch(createComment(id, changedBlog))
+    dispatch(setNotification(`Comment to : '${blog.title}' added`,5))
     // console.log("updated db");
   }
 

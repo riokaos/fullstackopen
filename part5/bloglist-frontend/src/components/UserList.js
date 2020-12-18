@@ -1,7 +1,6 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-// import { vote } from '../reducers/anecdoteReducer'
-// import { setNotification } from '../reducers/notificationReducer'
+import  { initializeUsers }  from '../reducers/userReducer'
 import { Link } from 'react-router-dom'
 
 const User = ({ user }) => {
@@ -19,7 +18,8 @@ const User = ({ user }) => {
 
 
 const UserList = ({ users }) => {
-  // const dispatch = useDispatch()
+  const dispatch = useDispatch()
+  dispatch(initializeUsers())
 
   // const blogs = useSelector(({ blogs }) => {
   //   return filter.length > 0

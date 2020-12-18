@@ -48,8 +48,8 @@ export const setNotification = (notification,secs) => {
       data: notification
     })
     setTimeout(() => {
-        dispatch(clearNotification(``));
-      }, secs*1000)
+      dispatch(clearNotification(``));
+    }, secs*1000)
 
   }
 }
