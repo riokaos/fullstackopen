@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 
+import { Table, Form, Button, Alert, Navbar, Nav } from 'react-bootstrap'
+
 import {
   BrowserRouter as Router,
   Switch, Route, Link, useParams, useRouteMatch, Redirect, useHistory
@@ -11,9 +13,22 @@ const Menu = () => {
   }
   return (
     <div>
-      <Link style={padding} to="/">anecdotes</Link>
-      <Link style={padding} to="/create">create new</Link>
-      <Link style={padding} to="/about">about</Link>
+      <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav">
+          <Nav className="mr-auto">
+            <Nav.Link href="#" as="span">
+              <Link style={padding} to="/">anecdotes</Link>
+            </Nav.Link>
+            <Nav.Link href="#" as="span">
+              <Link style={padding} to="/create">create new</Link>
+            </Nav.Link>
+            <Nav.Link href="#" as="span">
+              <Link style={padding} to="/about">about</Link>
+            </Nav.Link>
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
     </div>
   )
 }
@@ -21,12 +36,22 @@ const Menu = () => {
 const AnecdoteList = ({ anecdotes }) => (
   <div>
     <h2>Anecdotes</h2>
-    <ul>
-      {anecdotes.map(anecdote => <li key={anecdote.id} >
-        <Link to={`/anecdotes/${anecdote.id}`}>{anecdote.content}</Link>
-        </li>
-      )}
-    </ul>
+      <Table striped>
+        <tbody>
+
+            {anecdotes.map(anecdote =>
+              <tr key={anecdote.id}>
+                <td>
+                  <Link to={`/anecdotes/${anecdote.id}`}>{anecdote.content}-</Link>
+                </td>
+                <td>
+                  {anecdote.info}
+                </td>
+              </tr>
+            )}
+
+        </tbody>
+      </Table>
   </div>
 )
 
@@ -85,21 +110,34 @@ const CreateNew = (props) => {
   return (
     <div>
       <h2>create a new anecdote</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          content
-          <input name='content' value={content} onChange={(e) => setContent(e.target.value)} />
-        </div>
-        <div>
-          author
-          <input name='author' value={author} onChange={(e) => setAuthor(e.target.value)} />
-        </div>
-        <div>
-          url for more info
-          <input name='info' value={info} onChange={(e)=> setInfo(e.target.value)} />
-        </div>
-        <button>create</button>
-      </form>
+      <Form onSubmit={handleSubmit}>
+        <Form.Group>
+          <Form.Label>content:</Form.Label>
+           <Form.Control
+             type="text"
+             name="content"
+             value={content}
+             onChange={(e) => setContent(e.target.value)}
+           />
+           <Form.Label>author:</Form.Label>
+           <Form.Control
+             type="text"
+             name="author"
+             value={author}
+             onChange={(e) => setAuthor(e.target.value)}
+           />
+           <Form.Label>url:</Form.Label>
+           <Form.Control
+             type="text"
+             name="info"
+             value={info}
+             onChange={(e) => setInfo(e.target.value)}
+           />
+          <Button variant="primary" type="submit">
+             create
+          </Button>
+        </Form.Group>
+      </Form>
     </div>
   )
 
@@ -142,6 +180,9 @@ const App = () => {
       }, 5000)
   }
 
+  const padding = {
+    padding: 5
+  }
   const anecdoteById = (id) =>
     anecdotes.find(a => a.id === id)
 
@@ -167,10 +208,14 @@ const App = () => {
     // </div>
 
     // <Router>
-    <div>
+    <div className="container">
       <h1>Software anecdotes</h1>
       <Menu />
-      {notiMessage}
+      {(notiMessage &&
+         <Alert variant="success">
+           {notiMessage}
+         </Alert>
+       )}
 
       <Switch>
         <Route path="/anecdotes/:id">
@@ -187,7 +232,6 @@ const App = () => {
         </Route>
       </Switch>
       <Footer />
-
       <div>
         <i>Note app, Department of Computer Science 2020</i>
       </div>
