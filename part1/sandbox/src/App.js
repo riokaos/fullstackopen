@@ -132,11 +132,11 @@ const App = (props) => {
         setNotes(notes.concat(returnedNote))
         // setNewNote('')
         setNotiMessage(
-            `Note '${returnedNote.content}' added`
-          )
-          setTimeout(() => {
-            setNotiMessage(null)
-          }, 5000)
+          `Note '${returnedNote.content}' added`
+        )
+        setTimeout(() => {
+          setNotiMessage(null)
+        }, 5000)
       })
       .catch(error => {
         // const niceError = () => error.response.data.map(error =>error)
